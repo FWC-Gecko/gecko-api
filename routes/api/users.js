@@ -82,7 +82,7 @@ router.post(
   }
 );
 
-// @route    POST api/users
+// @route    POST api/users/googlesign
 // @desc     Register user by Google
 // @access   Public
 router.post(
@@ -164,49 +164,7 @@ router.post(
   }
 );
 
-// @route    POST api/users/toggleWatchList
-// @desc     Add Watch List
-// @access   Private
-router.post('/toggleWatchList', auth, async (req, res) => {
-  const { slug } = req.body;
-
-  console.log('asdfasdfasdf', slug);
-
-  try {
-    let user = await User.findOne({ _id: req.user.id });
-
-    let watchlist = user.watchlist;
-
-    if (!watchlist.includes(slug)) {
-      watchlist.push(slug);
-      console.log('add slug from account', slug);
-    } else {
-      const index = watchlist.indexOf(slug);
-      if (index > -1) {
-        // only splice array when item is found
-        console.log('delete slug from account', slug);
-        watchlist.splice(index, 1); // 2nd parameter means remove one item only
-      }
-    }
-
-    await User.findOneAndUpdate(
-      { _id: req.user.id },
-      {
-        $set: {
-          watchlist: watchlist
-        }
-      },
-      { new: true, upsert: true, setDefaultsOnInsert: true }
-    );
-
-    res.json({ msg: 'Success' });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
-  }
-});
-
-// @route    POST api/users/toggleWatchList
+// @route    POST api/users/update
 // @desc     Add Watch List
 // @access   Private
 router.post('/update', auth, async (req, res) => {
