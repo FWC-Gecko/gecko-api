@@ -15,7 +15,6 @@ const User = require('../../models/User');
 // @access   Public
 router.post(
   '/',
-  check('name', 'Name is required').notEmpty(),
   check('email', 'Please include a valid email').isEmail(),
   check(
     'password',
@@ -27,7 +26,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, email, password } = req.body;
+    const { firstname, lastname, email, password } = req.body;
 
     try {
       let user = await User.findOne({ email });
@@ -47,12 +46,7 @@ router.post(
         { forceHttps: true }
       );
 
-      user = new User({
-        name,
-        email,
-        avatar,
-        password
-      });
+      user = new User({ firstname, lastname, email, avatar, password });
 
       const salt = await bcrypt.genSalt(10);
 
@@ -165,14 +159,15 @@ router.post(
 );
 
 // @route    POST api/users/update
-// @desc     Add Watch List
+// @desc     Update User Profile
 // @access   Private
 router.post('/update', auth, async (req, res) => {
-  const { name, address, password } = req.body;
+  const { firstname, lastname, address, password } = req.body;
 
   try {
     let user = {
-      name,
+      firstname,
+      lastname,
       address
     };
 

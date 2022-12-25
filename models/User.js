@@ -1,7 +1,10 @@
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
-  name: {
+  firstname: {
+    type: String
+  },
+  lastname: {
     type: String
   },
   email: {
@@ -13,27 +16,18 @@ const UserSchema = new mongoose.Schema({
   avatar: {
     type: String
   },
-  ethereumAddress: {
+  website: {
     type: String
   },
-  watchlist: {
-    type: Array
-  },
-  address: {
+  birthday: {
     type: String
   },
-  role: {
-    type: String,
-    default: 0
+  biography: {
+    type: String
   },
   date: {
     type: Date,
     default: Date.now
-  },
-  type: {
-    type: String,
-    default: 'email',
-    enum: ['email', 'google', 'kakao']
   }
 });
 
