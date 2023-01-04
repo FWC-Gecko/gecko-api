@@ -80,7 +80,15 @@ router.post(
 // @access   Private
 router.put('/me', auth, async (req, res) => {
   try {
-    const { displayName, name, biography, birthday, website } = req.body;
+    const {
+      firstname,
+      lastname,
+      name,
+      biography,
+      birthday,
+      walletAddress,
+      website
+    } = req.body;
 
     let user = await User.findById(req.user.id);
     if (!user) {
@@ -90,7 +98,15 @@ router.put('/me', auth, async (req, res) => {
     user = await User.findOneAndUpdate(
       { _id: req.user.id },
       {
-        $set: { displayName, name, biography, birthday, website }
+        $set: {
+          firstname,
+          lastname,
+          name,
+          biography,
+          walletAddress,
+          birthday,
+          website
+        }
       },
       { new: true, upsert: true, setDefaultsOnInsert: true }
     );

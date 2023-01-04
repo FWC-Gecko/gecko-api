@@ -25,6 +25,9 @@ const UserSchema = new mongoose.Schema({
   biography: {
     type: String
   },
+  walletAddress: {
+    type: String
+  },
   date: {
     type: Date,
     default: Date.now
