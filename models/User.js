@@ -28,6 +28,10 @@ const UserSchema = new mongoose.Schema({
   walletAddress: {
     type: String
   },
+  role: {
+    type: String,
+    default: 'user'
+  },
   date: {
     type: Date,
     default: Date.now

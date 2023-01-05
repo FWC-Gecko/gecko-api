@@ -158,76 +158,162 @@ router.post(
   }
 );
 
-// @route    POST api/users/update
-// @desc     Update User Profile
-// @access   Private
-router.post('/update', auth, async (req, res) => {
-  const { firstname, lastname, address, password } = req.body;
-
-  try {
-    let user = {
-      firstname,
-      lastname,
-      address
-    };
-
-    if (password) {
-      const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(password, salt);
+// @route    POST api/users/admin
+// @desc     Register admin
+// @access   Public
+router.post(
+  '/admin',
+  check('email', 'Please include a valid email').isEmail(),
+  check(
+    'password',
+    'Please enter a password with 6 or more characters'
+  ).isLength({ min: 6 }),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    await User.findOneAndUpdate(
-      { _id: req.user.id },
-      {
-        $set: user
-      },
-      { new: true, upsert: true, setDefaultsOnInsert: true }
-    );
+    const { firstname, lastname, email, password } = req.body;
 
-    res.json({ msg: 'Profile update Success' });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
-  }
-});
+    try {
+      let user = await User.findOne({ email });
 
-// @route    POST api/users/toggleWatchList
-// @desc     Add Watch List
-// @access   Private
-router.get('/', auth, async (req, res) => {
-  try {
-    const users = await User.find();
-    res.json(users);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
-  }
-});
+      if (user) {
+        return res
+          .status(400)
+          .json({ errors: [{ msg: 'User already exists' }] });
+      }
 
-// @route    POST api/users/toggleWatchList
-// @desc     Add Watch List
-// @access   Private
-router.post('/setRole', auth, async (req, res) => {
-  const { _id, role } = req.body;
+      const avatar = normalize(
+        gravatar.url(email, {
+          s: '200',
+          r: 'pg',
+          d: 'mm'
+        }),
+        { forceHttps: true }
+      );
 
-  try {
-    await User.findOneAndUpdate(
-      { _id: _id },
-      {
-        $set: {
-          role: role
+      user = new User({
+        firstname,
+        lastname,
+        email,
+        avatar,
+        password,
+        role: 'admin'
+      });
+
+      const salt = await bcrypt.genSalt(10);
+
+      user.password = await bcrypt.hash(password, salt);
+
+      await user.save();
+
+      const payload = {
+        user: {
+          id: user.id
         }
-      },
-      { new: true, upsert: true, setDefaultsOnInsert: true }
-    );
+      };
 
-    const users = await User.find();
+      jwt.sign(
+        payload,
+        config.get('jwtSecret'),
+        { expiresIn: '5 days' },
+        (err, token) => {
+          if (err) throw err;
+          res.json({ token });
+        }
+      );
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server error');
+    }
+  }
+);
 
+// @route    POST api/users/getUsers
+// @desc     Get Users Data
+// @access   Private
+router.get('/getUsers', auth, async (req, res) => {
+  try {
+    const users = await User.find({ role: 'user' });
     res.json(users);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
   }
 });
+
+// // @route    POST api/users/update
+// // @desc     Update User Profile
+// // @access   Private
+// router.post('/update', auth, async (req, res) => {
+//   const { firstname, lastname, address, password } = req.body;
+
+//   try {
+//     let user = {
+//       firstname,
+//       lastname,
+//       address
+//     };
+
+//     if (password) {
+//       const salt = await bcrypt.genSalt(10);
+//       user.password = await bcrypt.hash(password, salt);
+//     }
+
+//     await User.findOneAndUpdate(
+//       { _id: req.user.id },
+//       {
+//         $set: user
+//       },
+//       { new: true, upsert: true, setDefaultsOnInsert: true }
+//     );
+
+//     res.json({ msg: 'Profile update Success' });
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Server error');
+//   }
+// });
+
+// // @route    POST api/users/toggleWatchList
+// // @desc     Add Watch List
+// // @access   Private
+// router.get('/', auth, async (req, res) => {
+//   try {
+//     const users = await User.find();
+//     res.json(users);
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Server error');
+//   }
+// });
+
+// // @route    POST api/users/toggleWatchList
+// // @desc     Add Watch List
+// // @access   Private
+// router.post('/setRole', auth, async (req, res) => {
+//   const { _id, role } = req.body;
+
+//   try {
+//     await User.findOneAndUpdate(
+//       { _id: _id },
+//       {
+//         $set: {
+//           role: role
+//         }
+//       },
+//       { new: true, upsert: true, setDefaultsOnInsert: true }
+//     );
+
+//     const users = await User.find();
+
+//     res.json(users);
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Server error');
+//   }
+// });
 
 module.exports = router;
