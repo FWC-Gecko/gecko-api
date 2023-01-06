@@ -244,6 +244,68 @@ router.get('/getUsers', auth, async (req, res) => {
   }
 });
 
+// @route    POST api/users/getUserById
+// @desc     Get Users Data By ID
+// @access   Private
+router.get('/getUserById/:id', auth, async (req, res) => {
+  try {
+    console.log(req.params.id);
+
+    const user = await User.findById(req.params.id);
+    res.status(200).json({
+      success: true,
+      user
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
+// @route    POST api/users/block
+// @desc     Block User
+// @access   Private
+router.get('/block/:id', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return next(new ErrorHandler('User Not Found', 404));
+    }
+
+    await User.updateOne({ _id: req.params.id }, { block: true });
+
+    res.status(200).json({
+      success: true,
+      message: 'User blocked.'
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
+// @route    POST api/users/block
+// @desc     Block User
+// @access   Private
+router.get('/unblock/:id', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return next(new ErrorHandler('User Not Found', 404));
+    }
+
+    await User.updateOne({ _id: req.params.id }, { block: false });
+
+    res.status(200).json({
+      success: true,
+      message: 'User blocked.'
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
 // // @route    POST api/users/update
 // // @desc     Update User Profile
 // // @access   Private
