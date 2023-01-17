@@ -8,28 +8,73 @@ const { check, validationResult } = require('express-validator');
 const normalize = require('normalize-url');
 const auth = require('../../middleware/auth');
 
-const User = require('../../models/User');
+const Token = require('../../models/Token');
+const { TokenStatus } = require('../../constants/enum');
 
-// @route    POST api/tokens/toggleWatchList
-// @desc     Add Watch List
+// @route    POST api/tokens/list
+// @desc     List Token
 // @access   Private
-router.post('/setRole', auth, async (req, res) => {
-  const { _id, role } = req.body;
-
+router.post('/list', auth, async (req, res) => {
   try {
-    await User.findOneAndUpdate(
-      { _id: _id },
-      {
-        $set: {
-          role: role
-        }
-      },
-      { new: true, upsert: true, setDefaultsOnInsert: true }
-    );
+    const {
+      position,
+      name,
+      email,
+      contactTelegram,
+      token_ticker,
+      contract_address,
+      total_supply,
+      decimals,
+      chain,
+      project_name,
+      coinmarketcap_url,
+      twitter,
+      telegram,
+      discord
+    } = req.body;
+    console.log(req.user);
 
-    const users = await User.find();
+    const token = new Token({
+      user: req.user.id,
+      token_ticker,
+      contract_address,
+      total_supply,
+      decimals,
+      chain_id: chain,
+      user_position: position,
+      user_name: name,
+      user_email: email,
+      user_telegram: contactTelegram,
+      project_name,
+      coinmarketcap_url,
+      twitter,
+      telegram,
+      discord
+    });
 
-    res.json(users);
+    await token.save();
+
+    res.status(200).json({
+      success: true,
+      message:
+        'Submitted successfully! Please wait while your request approved.'
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+// @route    GET api/tokens/allowed
+// @desc     Get allowed token list
+// @access   Public
+router.get('/allowed', async (req, res) => {
+  try {
+    const tokens = await Token.find({ status: TokenStatus.Allowed });
+    res.json({
+      success: true,
+      tokens: tokens
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
