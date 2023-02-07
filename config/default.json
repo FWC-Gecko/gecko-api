@@ -1,6 +1,0 @@
-{
-  "mongoURI": "mongodb+srv://root:root@cluster0.az0g5qg.mongodb.net/test",
-  "jwtSecret": "secret",
-  "githubToken": "<yoursecrectaccesstoken>",
-  "APIKEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJybERnRkp0OGRPUHByd1JvTUpaYTNqQ3NIZVkyIiwiaWF0IjoxNjU2NDkxMzAzLCJpc3MiOiJTdGFraW5ncmV3YXJkcyBQdWJsaWMgQVBJIn0.MDH8TR8cgxlA9DfUBGj3zuK8ueJUf5oo-ACsvN-QWqY"
-}
