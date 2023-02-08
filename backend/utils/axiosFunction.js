@@ -34,7 +34,7 @@ const quoteLatestFunction = async (ids) =>
   await axiosFunction(QUOTE_LATEST_URL, { id: ids.join(',') });
 
 const IDMapFunction = async () =>
-  await axiosFunction(ID_MAP_URL, { limit: 10, sort: 'cmc_rank' });
+  await axiosFunction(ID_MAP_URL, { limit: 100, sort: 'cmc_rank' });
 
 const metadataFunction = async (ids) =>
   await axiosFunction(METADATA_URL, { id: ids.join(',') });
