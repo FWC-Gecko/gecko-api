@@ -1,6 +1,6 @@
-const { body } = require('express-validator');
+const { body, param } = require('express-validator');
 
-const { Position, Blockchain, AssetTag } = require('../constants/enum');
+const { Position, Blockchain } = require('../constants/enum');
 
 //  Unit validations
 const stringValidation = (name) => [
@@ -71,4 +71,14 @@ const listNewTokenValidation = [
   ...linkValidation('website1'),
   ...stringValidation('cryptoAssetTags'),
 ];
-module.exports = { listNewTokenValidation };
+
+const getTokenByIdValidation = [
+  param('id')
+    .exists()
+    .withMessage('Not Existed')
+    .bail()
+    .isMongoId()
+    .withMessage('Not Mongo ID'),
+];
+
+module.exports = { listNewTokenValidation, getTokenByIdValidation };

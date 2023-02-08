@@ -9,9 +9,13 @@ const {
   getTrendingTokens,
   getNewTokens,
   addTopTokens,
+  getTokenById,
 } = require('../controllers/globalController');
 
-const { listNewTokenValidation } = require('../validations/globalValidation');
+const {
+  listNewTokenValidation,
+  getTokenByIdValidation,
+} = require('../validations/globalValidation');
 
 const validation = require('../middlewares/validation');
 
@@ -24,11 +28,16 @@ const router = express();
 router.route('/tokens').get(searchTokens);
 
 //  Get Trending Tokens (3 examples)
-router.route('/token/trending').get(getTrendingTokens);
+router.route('/tokens/trending').get(getTrendingTokens);
 //  Get New Tokens (3 examples)
 router.route('/tokens/new').get(getNewTokens);
 //  Add Top Tokens (100 examples)
 router.route('/tokens/add').post(addTopTokens);
+
+//  Get A Token By Id
+router
+  .route('/token/:id')
+  .get(...getTokenByIdValidation, validation, getTokenById);
 
 /**
  * List new token

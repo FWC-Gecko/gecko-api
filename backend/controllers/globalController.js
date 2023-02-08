@@ -164,7 +164,38 @@ exports.addTopTokens = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getTrendingTokens = catchAsync(async (req, res, next) => {});
+exports.getTrendingTokens = catchAsync(async (req, res, next) => {
+  const tokens = JSON.parse(
+    JSON.stringify(
+      await Token.find({ status: 'Active' })
+        .select({
+          name: 1,
+          symbol: 1,
+          ID: 1,
+        })
+        .sort({ createdAt: -1 })
+        .limit(3)
+    )
+  );
+
+  const IDs = tokens.map((token) => token.ID);
+  const len = IDs.length;
+
+  if (IDs && len) {
+    const { success, data, code, message } = await quoteLatestFunction(IDs);
+    if (!success) {
+      return next(new ErrorHandler(message, code));
+    }
+    for (let i = 0; i < len; i++) {
+      tokens[i].volume_change_24h = data[IDs[i]].quote.USD.volume_change_24h;
+    }
+  }
+
+  res.status(200).json({
+    success: true,
+    tokens,
+  });
+});
 
 exports.getNewTokens = catchAsync(async (req, res, next) => {
   const tokens = JSON.parse(
@@ -239,5 +270,55 @@ exports.getAssetTagList = catchAsync(async (req, res, next) => {
   res.status(200).json({
     success: true,
     assetTags: AssetTag,
+  });
+});
+
+exports.getTokenById = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+
+  const token = JSON.parse(JSON.stringify(await Token.findById(id)));
+
+  if (!token) {
+    return next(new ErrorHandler('Token Not Found', 404));
+  }
+
+  if (token.status !== TokenStatus.Active) {
+    return next(new ErrorHandler('Token Not Active', 403));
+  }
+
+  //  Watchlist count
+  token.watchlistCount = token.watchlist.length;
+  //  Watchlist Status
+  if (
+    req.user &&
+    req.user._id &&
+    token.watchlist.includes(req.user._id.toString())
+  ) {
+    token.watchlist = true;
+  } else {
+    token.watchlist = false;
+  }
+
+  //  Quote Lastest
+  const { success, data, message, code } = await quoteLatestFunction([
+    token.ID,
+  ]);
+
+  if (!success) {
+    return next(new ErrorHandler(message, code));
+  }
+
+  token.price = data[token.ID].quote.USD.price;
+  token.volume_24h = data[token.ID].quote.USD.volume_24h;
+  token.volume_change_24h = data[token.ID].quote.USD.volume_change_24h;
+  token.percent_change_1h = data[token.ID].quote.USD.percent_change_1h;
+  token.percent_change_24h = data[token.ID].quote.USD.percent_change_24h;
+  token.percent_change_7d = data[token.ID].quote.USD.percent_change_7d;
+  token.market_cap = data[token.ID].quote.USD.market_cap;
+  token.circulating_supply = data[token.ID].circulating_supply;
+
+  res.status(200).json({
+    success: true,
+    token,
   });
 });
