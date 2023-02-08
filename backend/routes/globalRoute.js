@@ -8,6 +8,7 @@ const {
   getAssetTagList,
   getTrendingTokens,
   getNewTokens,
+  addTopTokens,
 } = require('../controllers/globalController');
 
 const { listNewTokenValidation } = require('../validations/globalValidation');
@@ -26,6 +27,8 @@ router.route('/tokens').get(searchTokens);
 router.route('/token/trending').get(getTrendingTokens);
 //  Get New Tokens (3 examples)
 router.route('/tokens/new').get(getNewTokens);
+//  Add Top Tokens (100 examples)
+router.route('/tokens/add').post(addTopTokens);
 
 /**
  * List new token

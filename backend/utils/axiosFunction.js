@@ -1,6 +1,11 @@
 const axios = require('axios');
 
-const { QUOTE_HOSTORICAL_URL, QUOTE_LATEST_URL } = require('../config/url');
+const {
+  QUOTE_HOSTORICAL_URL,
+  QUOTE_LATEST_URL,
+  ID_MAP_URL,
+  METADATA_URL,
+} = require('../config/url');
 
 const axiosFunction = async (url, params) => {
   const result = await axios.get(url, {
@@ -28,4 +33,15 @@ const quoteHistoricalFunction = async (ids) =>
 const quoteLatestFunction = async (ids) =>
   await axiosFunction(QUOTE_LATEST_URL, { id: ids.join(',') });
 
-module.exports = { quoteHistoricalFunction, quoteLatestFunction };
+const IDMapFunction = async () =>
+  await axiosFunction(ID_MAP_URL, { limit: 10, sort: 'cmc_rank' });
+
+const metadataFunction = async (ids) =>
+  await axiosFunction(METADATA_URL, { id: ids.join(',') });
+
+module.exports = {
+  quoteHistoricalFunction,
+  quoteLatestFunction,
+  IDMapFunction,
+  metadataFunction,
+};

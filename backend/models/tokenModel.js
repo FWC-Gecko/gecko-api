@@ -21,8 +21,12 @@ const tokenSchema = new mongoose.Schema({
   description: { type: String, required: true },
   detailedDescription: { type: String, required: true },
   //  Step3: Token Information
-  blockchain: { type: String, enum: Blockchain, required: true },
-  address: { type: String, required: true },
+  contractAddress: [
+    {
+      address: { type: String, required: true },
+      blockchain: { type: String, required: true },
+    },
+  ],
   decimals: { type: Number, required: true },
   totalSupply: { type: Number, required: true },
   maxSupply: { type: Number, required: true },
@@ -33,13 +37,11 @@ const tokenSchema = new mongoose.Schema({
   cryptoAssetTags: [
     {
       type: String,
-      enum: AssetTag,
-      required: true,
     },
   ],
   coinmarketcap: { type: String },
   coingecko: { type: String },
-  blockExplorer: { type: String },
+  explorer: [{ type: String }],
   whitepaper: { type: String },
   telegram: { type: String },
   twitter: { type: String },
@@ -52,6 +54,7 @@ const tokenSchema = new mongoose.Schema({
   twitch: { type: String },
   facebook: { type: String },
   email: { type: String },
+  logo: { type: String },
   //  Other
   status: { type: String, enum: Object.values(TokenStatus), required: true },
   createdAt: {

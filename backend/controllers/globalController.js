@@ -14,6 +14,8 @@ const {
 const {
   quoteHistoricalFunction,
   quoteLatestFunction,
+  IDMapFunction,
+  metadataFunction,
 } = require('../utils/axiosFunction');
 
 exports.searchTokens = catchAsync(async (req, res, next) => {
@@ -42,7 +44,7 @@ exports.searchTokens = catchAsync(async (req, res, next) => {
   const len = IDs.length;
 
   if (IDs && len) {
-    let { success, data, code, message } = await quoteHistoricalFunction(IDs);
+    const { success, data, code, message } = await quoteHistoricalFunction(IDs);
     if (!success) {
       return next(new ErrorHandler(message, code));
     }
@@ -62,7 +64,7 @@ exports.searchTokens = catchAsync(async (req, res, next) => {
   }
 
   if (IDs && len) {
-    let { success, data, code, message } = await quoteLatestFunction(IDs);
+    const { success, data, code, message } = await quoteLatestFunction(IDs);
     if (!success) {
       return next(new ErrorHandler(message, code));
     }
@@ -90,6 +92,77 @@ exports.searchTokens = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.addTopTokens = catchAsync(async (req, res, next) => {
+  const { success, data, code, message } = await IDMapFunction();
+
+  if (!success) {
+    return next(new ErrorHandler(message, code));
+  }
+
+  const IDs = data.map((token) => token.id);
+
+  const result_meta = await metadataFunction(IDs);
+
+  if (!result_meta.success) {
+    return next(new ErrorHandler(result_meta.message, result_meta.code));
+  }
+
+  const result_quote_latest = await quoteLatestFunction(IDs);
+
+  if (!result_quote_latest.success) {
+    return next(
+      new ErrorHandler(result_quote_latest.message, result_quote_latest.code)
+    );
+  }
+
+  let tokens = [];
+
+  for (const ID of IDs) {
+    const token_meta = result_meta.data[ID];
+    const token_quote = result_quote_latest.data[ID];
+    tokens.push({
+      userPosition: 'CEO',
+      userName: 'superumam',
+      userEmail: 'umamlikeyou@gmail.com',
+      userTelegram: '@superumam',
+      name: token_meta.name,
+      symbol: token_meta.symbol,
+      launchedAt:
+        token_meta.date_launched === null
+          ? new Date()
+          : token_meta.date_launched,
+      description: token_meta.description,
+      detailedDescription: token_meta.description,
+      decimals: 18,
+      totalSupply:
+        token_quote.total_supply === null ? 0 : token_quote.total_supply,
+      maxSupply: token_quote.max_supply === null ? 0 : token_quote.max_supply,
+      circulatingSupply:
+        token_quote.circulating_supply === null
+          ? 0
+          : token_quote.circulating_supply,
+      website1: token_meta.urls.website[0],
+      twitter: token_meta.urls.twitter[0],
+      reddit: token_meta.urls.reddit[0],
+      explorer: token_meta.urls.explorer,
+      logo: token_meta.logo,
+      cryptoAssetTags: token_meta.tags,
+      contractAddress: token_meta.contract_address.map((contract) => ({
+        address: contract.contract_address,
+        blockchain: contract.platform.coin.name,
+      })),
+      status: TokenStatus.Active,
+    });
+  }
+
+  await Token.insertMany(tokens);
+
+  res.status(201).json({
+    success: true,
+    message: 'Top Tokens Added',
+  });
+});
+
 exports.getTrendingTokens = catchAsync(async (req, res, next) => {});
 
 exports.getNewTokens = catchAsync(async (req, res, next) => {
@@ -110,7 +183,7 @@ exports.getNewTokens = catchAsync(async (req, res, next) => {
   const len = IDs.length;
 
   if (IDs && len) {
-    let { success, data, code, message } = await quoteLatestFunction(IDs);
+    const { success, data, code, message } = await quoteLatestFunction(IDs);
     if (!success) {
       return next(new ErrorHandler(message, code));
     }
@@ -129,8 +202,14 @@ exports.listNewToken = catchAsync(async (req, res, next) => {
   const tokenValues = { ...req.body };
 
   tokenValues.userPosition = Position[tokenValues.userPosition];
-  tokenValues.blockchain = Blockchain[tokenValues.blockchain];
   tokenValues.cryptoAssetTags = tokenValues.cryptoAssetTags.split(',');
+  tokenValues.explorer = tokenValues.explorer.split(',');
+  tokenValues.contractAddress = {
+    address: tokenValues.address,
+    blockchain: Blockchain[tokenValues.blockchain],
+  };
+  delete tokenValues['address'];
+  delete tokenValues['blockchain'];
   tokenValues.status = TokenStatus.InReview;
 
   const token = new Token(tokenValues);
