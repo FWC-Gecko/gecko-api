@@ -10,6 +10,7 @@ const sendToken = require('../utils/sendToken');
 const ErrorHandler = require('../utils/errorHandler');
 const sendEmail = require('../utils/sendEmail');
 const { deleteFile } = require('../utils/awsFunctions');
+const { Role } = require('../constants/enum');
 
 // Signup User
 exports.signupUser = catchAsync(async (req, res, next) => {
@@ -27,6 +28,7 @@ exports.signupUser = catchAsync(async (req, res, next) => {
     userName,
     email,
     password,
+    role: Role.Customer,
   });
 
   sendToken(newUser, 201, res);
