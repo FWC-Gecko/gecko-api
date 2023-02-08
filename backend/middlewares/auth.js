@@ -35,32 +35,14 @@ exports.isAuthenticated = catchAsync(async (req, res, next) => {
 });
 
 exports.isAdmin = catchAsync(async (req, res, next) => {
-  if (req.user && req.user.role != Role.Admin) {
+  if (req.user && req.user.role !== Role.Admin) {
     return next(new ErrorHandler('Only Admin To Access', 401));
   }
   next();
 });
 
-exports.isAdminOrFinance = catchAsync(async (req, res, next) => {
-  if (
-    req.user &&
-    req.user.role != Role.Admin &&
-    req.user.role != Role.Finance
-  ) {
-    return next(new ErrorHandler('Only Admin Or Finance To Access', 401));
-  }
-  next();
-});
-
-exports.isArtist = catchAsync(async (req, res, next) => {
-  if (req.user && req.user.role != Role.Artist) {
-    return next(new ErrorHandler('Only Artist To Access', 401));
-  }
-  next();
-});
-
 exports.isCustomer = catchAsync(async (req, res, next) => {
-  if (req.user && req.user.role != Role.Customer) {
+  if (req.user && req.user.role !== Role.Customer) {
     return next(new ErrorHandler('Only Customer To Access', 401));
   }
   next();
