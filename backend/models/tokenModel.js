@@ -61,6 +61,7 @@ const tokenSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  watchlist: [{ type: String }],
 });
 
 module.exports = mongoose.model('Token', tokenSchema);

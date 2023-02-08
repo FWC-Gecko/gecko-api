@@ -51,9 +51,11 @@ app.use('/public', express.static('public'));
 // import routes
 const auth = require('./routes/authRoute');
 const global = require('./routes/globalRoute');
+const customer = require('./routes/customerRoute');
 
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/global', global);
+app.use('/api/v1/customer', customer);
 
 // deployment
 __dirname = path.resolve();
