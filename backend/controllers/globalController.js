@@ -90,6 +90,41 @@ exports.searchTokens = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getTrendingTokens = catchAsync(async (req, res, next) => {});
+
+exports.getNewTokens = catchAsync(async (req, res, next) => {
+  const tokens = JSON.parse(
+    JSON.stringify(
+      await Token.find({ status: 'Active' })
+        .select({
+          name: 1,
+          symbol: 1,
+          ID: 1,
+        })
+        .sort({ createdAt: -1 })
+        .limit(3)
+    )
+  );
+
+  const IDs = tokens.map((token) => token.ID);
+  const len = IDs.length;
+
+  if (IDs && len) {
+    let { success, data, code, message } = await quoteLatestFunction(IDs);
+    if (!success) {
+      return next(new ErrorHandler(message, code));
+    }
+    for (let i = 0; i < len; i++) {
+      tokens[i].volume_change_24h = data[IDs[i]].quote.USD.volume_change_24h;
+    }
+  }
+
+  res.status(200).json({
+    success: true,
+    tokens,
+  });
+});
+
 exports.listNewToken = catchAsync(async (req, res, next) => {
   const tokenValues = { ...req.body };
 

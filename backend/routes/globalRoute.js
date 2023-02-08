@@ -6,6 +6,8 @@ const {
   getPositionList,
   getBlockchainList,
   getAssetTagList,
+  getTrendingTokens,
+  getNewTokens,
 } = require('../controllers/globalController');
 
 const { listNewTokenValidation } = require('../validations/globalValidation');
@@ -19,6 +21,11 @@ const router = express();
  */
 //  Search tokens
 router.route('/tokens').get(searchTokens);
+
+//  Get Trending Tokens (3 examples)
+router.route('/token/trending').get(getTrendingTokens);
+//  Get New Tokens (3 examples)
+router.route('/tokens/new').get(getNewTokens);
 
 /**
  * List new token
