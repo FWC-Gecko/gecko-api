@@ -155,14 +155,26 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 });
 
 exports.getProfile = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user._id);
+
   res.status(200).json({
     success: true,
-    user: req.user,
+    user,
   });
 });
 
 // Update Profile
 exports.updateProfile = catchAsync(async (req, res, next) => {
+  const { displayName, userName, biography, birthday, website } = req.body;
+
+  await User.findByIdAndUpdate(req.user._id, {
+    displayName,
+    userName,
+    biography,
+    birthday,
+    website,
+  });
+
   res.status(200).json({
     success: true,
     message: 'Profile Updated',
@@ -252,5 +264,14 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: 'The Password Reset',
+  });
+});
+
+exports.updateWallet = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user._id, { wallet: req.body.wallet });
+
+  res.status(200).json({
+    success: true,
+    message: 'Wallet Updated',
   });
 });

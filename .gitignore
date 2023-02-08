@@ -2,4 +2,6 @@
 /node_modules
 
 # local env files
-/backend/config/config.env
+/.env
+/.env.development
+/.env.staging

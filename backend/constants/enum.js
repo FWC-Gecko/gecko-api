@@ -45,7 +45,12 @@ const AssetTag = [
   'Technology',
 ];
 
-const TokenStatus = ['In Review', 'Pending', 'Update Requested', 'Active'];
+const TokenStatus = {
+  InReview: 'In Review',
+  Pending: 'Pending',
+  UpdateRequested: 'Update Requested',
+  Active: 'Active',
+};
 
 module.exports = {
   Role,

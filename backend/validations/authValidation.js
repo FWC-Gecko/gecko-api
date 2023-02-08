@@ -57,8 +57,7 @@ const verifyUserValidation = [
     .withMessage('Not Existed')
     .bail()
     .isInt({ min: 100000, max: 999999 })
-    .withMessage('Not Integer Or Out Of Range')
-    .bail(),
+    .withMessage('Not Integer Or Out Of Range'),
 ];
 
 module.exports = {

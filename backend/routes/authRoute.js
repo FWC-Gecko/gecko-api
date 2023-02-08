@@ -11,6 +11,7 @@ const {
   updateProfile,
   deleteProfile,
   sendPasscodeByEmail,
+  updateWallet,
 } = require('../controllers/authController');
 
 const { isAuthenticated } = require('../middlewares/auth');
@@ -58,5 +59,8 @@ router.route('/password/update').put(isAuthenticated, updatePassword);
 router.route('/password/forgot').post(forgotPassword);
 //  Reset a password
 router.route('/password/reset/:token').put(resetPassword);
+
+//  Update the wallet address
+router.route('/wallet/update').put(isAuthenticated, updateWallet);
 
 module.exports = router;

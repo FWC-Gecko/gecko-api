@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: process.env.DEFAULT_USER_AVATAR,
   },
-  displayname: {
+  displayName: {
     type: String,
   },
   birthday: {
