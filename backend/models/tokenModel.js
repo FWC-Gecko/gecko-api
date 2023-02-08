@@ -1,11 +1,6 @@
 const mongoose = require('mongoose');
 
-const {
-  Position,
-  Blockchain,
-  TokenStatus,
-  AssetTag,
-} = require('../constants/enum');
+const { Position, TokenStatus } = require('../constants/enum');
 
 const tokenSchema = new mongoose.Schema({
   ID: { type: Number },
