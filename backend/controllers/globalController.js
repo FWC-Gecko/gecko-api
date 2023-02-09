@@ -352,8 +352,9 @@ exports.getTokenById = catchAsync(async (req, res, next) => {
   token.market_cap = data[token.ID].quote.USD.market_cap;
   token.circulating_supply = data[token.ID].circulating_supply;
   token.cmc_rank = data[token.ID].cmc_rank;
-  token.market_cap_dominance = data[token.ID].market_cap_dominance;
-  token.fully_diluted_market_cap = data[token.ID].fully_diluted_market_cap;
+  token.market_cap_dominance = data[token.ID].quote.USD.market_cap_dominance;
+  token.fully_diluted_market_cap =
+    data[token.ID].quote.USD.fully_diluted_market_cap;
   token.high_24h = result_ohlcv.data[token.ID].quote.USD.high;
   token.low_24h = result_ohlcv.data[token.ID].quote.USD.low;
 
