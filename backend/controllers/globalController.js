@@ -37,7 +37,10 @@ exports.searchTokens = catchAsync(async (req, res, next) => {
   let page = Number(req.query.page);
 
   //  Get all token list
-  const allTokens = await Token.find({ status: 'Active' }).select({
+  const allTokens = await Token.find({
+    status: 'Active',
+    name: { $regex: search, $options: 'i' },
+  }).select({
     name: 1,
     symbol: 1,
     ID: 1,
