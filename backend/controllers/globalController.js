@@ -109,10 +109,7 @@ exports.searchTokens = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    totalCount,
-    totalPage,
-    page,
-    tokens,
+    data: { totalCount, totalPage, page, tokens },
   });
 });
 
@@ -217,7 +214,7 @@ exports.getTrendingTokens = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    tokens,
+    data: { tokens },
   });
 });
 
@@ -250,7 +247,7 @@ exports.getNewTokens = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    tokens,
+    data: { tokens },
   });
 });
 
@@ -279,21 +276,21 @@ exports.listNewToken = catchAsync(async (req, res, next) => {
 exports.getPositionList = catchAsync(async (req, res, next) => {
   res.status(200).json({
     success: true,
-    positions: Position,
+    data: { positons: Position },
   });
 });
 
 exports.getBlockchainList = catchAsync(async (req, res, next) => {
   res.status(200).json({
     success: true,
-    blockchains: Blockchain,
+    data: { blockchains: Blockchain },
   });
 });
 
 exports.getAssetTagList = catchAsync(async (req, res, next) => {
   res.status(200).json({
     success: true,
-    assetTags: AssetTag,
+    data: { assetTags: AssetTag },
   });
 });
 
@@ -361,7 +358,7 @@ exports.getTokenById = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    token,
+    data: { token },
   });
 });
 

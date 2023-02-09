@@ -22,7 +22,9 @@ exports.getWatchlist = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    watchlist: token.watchlist.includes(userId),
+    data: {
+      watchlist: token.watchlist.includes(userId),
+    },
   });
 });
 
