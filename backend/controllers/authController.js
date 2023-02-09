@@ -31,7 +31,11 @@ exports.signupUser = catchAsync(async (req, res, next) => {
     role: Role.Customer,
   });
 
-  sendToken(newUser, 201, res);
+  res.status(200).json({
+    success: true,
+    message: 'Signed Up',
+  });
+  // sendToken(newUser, 201, res);
 });
 
 // Login User
