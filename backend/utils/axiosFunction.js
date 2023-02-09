@@ -7,6 +7,7 @@ const {
   METADATA_URL,
   MARKET_PAIR_URL,
   OHLCV_HISTORICAL_URL,
+  OHLCV_LATEST_URL,
 } = require('../config/url');
 
 const axiosFunction = async (url, params) => {
@@ -47,6 +48,9 @@ const marketPairFunction = async (id) =>
 const ohlcvHistoricalFunction = async (id) =>
   await axiosFunction(OHLCV_HISTORICAL_URL, { id });
 
+const ohlcvLatestFunction = async (ids) =>
+  await axiosFunction(OHLCV_LATEST_URL, { id: ids.join(',') });
+
 module.exports = {
   quoteHistoricalFunction,
   quoteLatestFunction,
@@ -54,4 +58,5 @@ module.exports = {
   metadataFunction,
   marketPairFunction,
   ohlcvHistoricalFunction,
+  ohlcvLatestFunction,
 };

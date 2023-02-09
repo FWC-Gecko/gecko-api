@@ -18,6 +18,7 @@ const {
   metadataFunction,
   marketPairFunction,
   ohlcvHistoricalFunction,
+  ohlcvLatestFunction,
 } = require('../utils/axiosFunction');
 
 const {
@@ -328,6 +329,19 @@ exports.getTokenById = catchAsync(async (req, res, next) => {
     return next(new ErrorHandler(message, code));
   }
 
+  const result_meta = await metadataFunction([token.ID]);
+
+  if (!result_meta.success) {
+    return next(new ErrorHandler(result_meta.message, result_meta.code));
+  }
+
+  const result_ohlcv = await ohlcvLatestFunction([token.ID]);
+
+  if (!result_ohlcv.success) {
+    return next(new ErrorHandler(result_ohlcv.message, result_ohlcv.code));
+  }
+
+  token.description = result_meta.data[token.ID].description;
   token.price = data[token.ID].quote.USD.price;
   token.volume_24h = data[token.ID].quote.USD.volume_24h;
   token.volume_change_24h = data[token.ID].quote.USD.volume_change_24h;
@@ -336,6 +350,11 @@ exports.getTokenById = catchAsync(async (req, res, next) => {
   token.percent_change_7d = data[token.ID].quote.USD.percent_change_7d;
   token.market_cap = data[token.ID].quote.USD.market_cap;
   token.circulating_supply = data[token.ID].circulating_supply;
+  token.cmc_rank = data[token.ID].cmc_rank;
+  token.market_cap_dominance = data[token.ID].market_cap_dominance;
+  token.fully_diluted_market_cap = data[token.ID].fully_diluted_market_cap;
+  token.high_24h = result_ohlcv.data[token.ID].quote.USD.high;
+  token.low_24h = result_ohlcv.data[token.ID].quote.USD.low;
 
   res.status(200).json({
     success: true,
