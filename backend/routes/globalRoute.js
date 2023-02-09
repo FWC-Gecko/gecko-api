@@ -10,6 +10,9 @@ const {
   getNewTokens,
   addTopTokens,
   getTokenById,
+  getTokenOverviewById,
+  getTokenMarketsById,
+  getTokenHistoricalDataById,
 } = require('../controllers/globalController');
 
 const {
@@ -38,7 +41,12 @@ router.route('/tokens/add').post(addTopTokens);
 router
   .route('/token/:id')
   .get(...getTokenByIdValidation, validation, getTokenById);
-
+//  Get A Token Overview By Id
+router.route('/token/:id/overview').get(getTokenOverviewById);
+//  Get markets
+router.route('/token/:id/markets').get(getTokenMarketsById);
+//  Get Historical Data
+router.route('/token/:id/historicaldata').get(getTokenHistoricalDataById);
 /**
  * List new token
  */

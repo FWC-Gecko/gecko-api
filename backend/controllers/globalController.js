@@ -16,7 +16,19 @@ const {
   quoteLatestFunction,
   IDMapFunction,
   metadataFunction,
+  marketPairFunction,
+  ohlcvHistoricalFunction,
 } = require('../utils/axiosFunction');
+
+const {
+  getUnixTimestamp,
+  getCurrentTime,
+  getBeforeDaysFromNow,
+  getBeforeMonthsFromNow,
+  getBeforeYearsFromNow,
+  getFirstDayOfThisYear,
+  getFormattedDate,
+} = require('../utils/dateFunction');
 
 exports.searchTokens = catchAsync(async (req, res, next) => {
   const { count, search } = req.query;
@@ -44,7 +56,15 @@ exports.searchTokens = catchAsync(async (req, res, next) => {
   const len = IDs.length;
 
   if (IDs && len) {
-    const { success, data, code, message } = await quoteHistoricalFunction(IDs);
+    //  last 7 days with interval(6h)
+    const timeStart = getBeforeDaysFromNow(7);
+    const timeEnd = getCurrentTime();
+    const { success, data, code, message } = await quoteHistoricalFunction(
+      IDs,
+      timeStart,
+      timeEnd,
+      '6h'
+    );
     if (!success) {
       return next(new ErrorHandler(message, code));
     }
@@ -320,5 +340,186 @@ exports.getTokenById = catchAsync(async (req, res, next) => {
   res.status(200).json({
     success: true,
     token,
+  });
+});
+
+exports.getTokenOverviewById = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  let { period, timeStart, timeEnd } = req.query;
+
+  const token = await Token.findById(id);
+
+  if (!token) {
+    return next(new ErrorHandler('Token Not Found', 404));
+  }
+
+  if (token.status !== TokenStatus.Active) {
+    return next(new ErrorHandler('Token Not Active', 403));
+  }
+
+  let interval = '1d';
+
+  switch (period) {
+    case '1D':
+      timeEnd = getCurrentTime();
+      timeStart = getBeforeDaysFromNow(1);
+      interval = '5m';
+      break;
+    case '7D':
+      timeStart = getBeforeDaysFromNow(7);
+      timeEnd = getCurrentTime();
+      interval = '15m';
+      break;
+    case '1M':
+      timeStart = getBeforeMonthsFromNow(1);
+      timeEnd = getCurrentTime();
+      interval = '1h';
+      break;
+    case '3M':
+      timeStart = getBeforeMonthsFromNow(3);
+      timeEnd = getCurrentTime();
+      interval = '3h';
+      break;
+    case '1Y':
+      timeStart = getBeforeYearsFromNow(1);
+      timeEnd = getCurrentTime();
+      interval = '1d';
+      break;
+    case 'YTD':
+      timeStart = getFirstDayOfThisYear();
+      timeEnd = getCurrentTime();
+      break;
+    case 'ALL':
+      timeStart = getBeforeYearsFromNow(1);
+      timeEnd = getCurrentTime();
+      break;
+    case 'DATE':
+      if (!timeStart) {
+        return next(new ErrorHandler('Starting Time Not Found', 404));
+      }
+      if (!timeEnd) {
+        return next(new ErrorHandler('Ending Time Not Found', 404));
+      }
+      timeStart = getUnixTimestamp(timeStart);
+      timeEnd = getUnixTimestamp(timeEnd);
+      break;
+    default:
+      return next(new ErrorHandler('Period Wrong', 403));
+  }
+
+  const { success, data, message, code } = await quoteHistoricalFunction(
+    [token.ID],
+    timeStart,
+    timeEnd,
+    interval
+  );
+  if (!success) {
+    return next(new ErrorHandler(message, code));
+  }
+
+  res.status(200).json({
+    success: true,
+    data: data.quotes.map((quote) => ({
+      timestamp: quote.timestamp,
+      price: quote.quote.USD.price,
+      marketCap: quote.quote.USD.market_cap,
+    })),
+  });
+});
+
+exports.getTokenMarketsById = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+
+  const token = await Token.findById(id);
+
+  if (!token) {
+    return next(new ErrorHandler('Token Not Found', 404));
+  }
+
+  if (token.status !== TokenStatus.Active) {
+    return next(new ErrorHandler('Token Not Active', 403));
+  }
+
+  const { success, data, message, code } = await marketPairFunction(token.ID);
+
+  if (!success) {
+    return next(new ErrorHandler(message, code));
+  }
+
+  const marketPairs = data.market_pairs;
+
+  //  Seperated By Category (spot, derivatives, futures)
+
+  const result = { spot: [], perpetual: [], futures: [] };
+
+  for (const marketPair of marketPairs) {
+    const { category, market_pair, quote, exchange } = marketPair;
+
+    if (category === 'spot') {
+      result['spot'].push({
+        source: exchange.name,
+        pairs: market_pair,
+        price: quote.USD.price,
+        volume_24h: quote.USD.volume_24h,
+        depth_negative_two: quote.USD.depth_negative_two,
+        depth_positive_two: quote.USD.depth_positive_two,
+      });
+    } else if (category === 'derivatives') {
+      result['perpetual'].push({
+        source: exchange.name,
+        pairs: market_pair,
+        price: quote.USD.price,
+        volume_24h: quote.USD.volume_24h,
+      });
+    } else if (category === 'futures') {
+      result['futures'].push({
+        source: exchange.name,
+        pairs: market_pair,
+        price: quote.USD.price,
+        volume_24h: quote.USD.volume_24h,
+      });
+    }
+  }
+
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
+
+exports.getTokenHistoricalDataById = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+
+  const token = await Token.findById(id);
+
+  if (!token) {
+    return next(new ErrorHandler('Token Not Found', 404));
+  }
+
+  if (token.status !== TokenStatus.Active) {
+    return next(new ErrorHandler('Token Not Active', 403));
+  }
+
+  const { success, data, message, code } = await ohlcvHistoricalFunction(
+    token.ID
+  );
+
+  if (!success) {
+    return next(new ErrorHandler(message, code));
+  }
+
+  const { quotes } = data;
+
+  res.status(200).json({
+    success: true,
+    data: quotes.map((quote) => ({
+      open: quote.quote.USD.open,
+      high: quote.quote.USD.high,
+      low: quote.quote.USD.low,
+      close: quote.quote.USD.close,
+      volume: quote.quote.USD.volume,
+      market_cap: quote.quote.USD.market_cap,
+      timestamp: getFormattedDate(quote.quote.USD.timestamp),
+    })),
   });
 });

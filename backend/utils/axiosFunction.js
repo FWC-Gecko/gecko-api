@@ -5,6 +5,8 @@ const {
   QUOTE_LATEST_URL,
   ID_MAP_URL,
   METADATA_URL,
+  MARKET_PAIR_URL,
+  OHLCV_HISTORICAL_URL,
 } = require('../config/url');
 
 const axiosFunction = async (url, params) => {
@@ -22,26 +24,34 @@ const axiosFunction = async (url, params) => {
       };
 };
 
-const quoteHistoricalFunction = async (ids) =>
+const quoteHistoricalFunction = async (ids, timeStart, timeEnd, interval) =>
   await axiosFunction(QUOTE_HOSTORICAL_URL, {
     id: ids.join(','),
-    time_start: Math.floor(Date.now() / 1000 - 60 * 60 * 24 * 7), //  Last 7 days
-    time_end: Math.floor(Date.now() / 1000),
-    interval: '6h',
+    time_start: timeStart,
+    time_end: timeEnd,
+    interval,
   });
 
 const quoteLatestFunction = async (ids) =>
   await axiosFunction(QUOTE_LATEST_URL, { id: ids.join(',') });
 
 const IDMapFunction = async () =>
-  await axiosFunction(ID_MAP_URL, { limit: 100, sort: 'cmc_rank' });
+  await axiosFunction(ID_MAP_URL, { limit: 200, sort: 'cmc_rank' });
 
 const metadataFunction = async (ids) =>
   await axiosFunction(METADATA_URL, { id: ids.join(',') });
+
+const marketPairFunction = async (id) =>
+  await axiosFunction(MARKET_PAIR_URL, { id });
+
+const ohlcvHistoricalFunction = async (id) =>
+  await axiosFunction(OHLCV_HISTORICAL_URL, { id });
 
 module.exports = {
   quoteHistoricalFunction,
   quoteLatestFunction,
   IDMapFunction,
   metadataFunction,
+  marketPairFunction,
+  ohlcvHistoricalFunction,
 };
