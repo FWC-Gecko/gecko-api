@@ -44,6 +44,7 @@ exports.searchTokens = catchAsync(async (req, res, next) => {
     name: 1,
     symbol: 1,
     ID: 1,
+    logo: 1,
   });
   //  Get total count of tokens
   const totalCount = allTokens.length;
