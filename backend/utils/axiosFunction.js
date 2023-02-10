@@ -3,11 +3,12 @@ const axios = require('axios');
 const {
   QUOTE_HOSTORICAL_URL,
   QUOTE_LATEST_URL,
-  ID_MAP_URL,
+  CRYPTO_MAP_URL,
   METADATA_URL,
   MARKET_PAIR_URL,
   OHLCV_HISTORICAL_URL,
   OHLCV_LATEST_URL,
+  EXCHANGE_MAP_URL,
 } = require('../config/url');
 
 const axiosFunction = async (url, params) => {
@@ -40,7 +41,10 @@ const quoteLatestFunction = async (ids, convertIds = []) => {
 };
 
 const IDMapFunction = async () =>
-  await axiosFunction(ID_MAP_URL, { limit: 200, sort: 'cmc_rank' });
+  await axiosFunction(CRYPTO_MAP_URL, { limit: 200, sort: 'cmc_rank' });
+
+const exchangeMapFunction = async () =>
+  await axiosFunction(EXCHANGE_MAP_URL, {});
 
 const metadataFunction = async (ids) =>
   await axiosFunction(METADATA_URL, { id: ids.join(',') });
@@ -62,4 +66,5 @@ module.exports = {
   marketPairFunction,
   ohlcvHistoricalFunction,
   ohlcvLatestFunction,
+  exchangeMapFunction,
 };

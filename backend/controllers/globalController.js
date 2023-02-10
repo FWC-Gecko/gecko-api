@@ -26,6 +26,7 @@ const {
   marketPairFunction,
   ohlcvHistoricalFunction,
   ohlcvLatestFunction,
+  exchangeMapFunction,
 } = require('../utils/axiosFunction');
 
 const {
@@ -37,6 +38,43 @@ const {
   getFirstDayOfThisYear,
   getFormattedDate,
 } = require('../utils/dateFunction');
+
+exports.getRecommendedData = catchAsync(async (req, res, next) => {
+  //  Get Crypto Count
+  const resultCryptos = await Token.find({ status: TokenStatus.Active });
+  const IDs = resultCryptos.map((crypto) => crypto.ID);
+
+  //  Get Total MarketCap & volume(24h)
+  const resultQuotes = await quoteLatestFunction(IDs);
+
+  if (!resultQuotes.success) {
+    return next(new ErrorHandler(resultQuotes.message, resultQuotes.code));
+  }
+
+  let totalMarketCap = 0;
+  let totalVolume24h = 0;
+  for (const ID of IDs) {
+    totalMarketCap += resultQuotes.data[ID].quote.USD.market_cap;
+    totalVolume24h += resultQuotes.data[ID].quote.USD.volume_24h;
+  }
+
+  //  Get Exchange Count
+  const resultExchange = await exchangeMapFunction();
+
+  if (!resultExchange.success) {
+    return next(new ErrorHandler(resultExchange.message, resultExchange.code));
+  }
+
+  res.status(200).json({
+    success: true,
+    data: {
+      cryptoCount: resultCryptos.length,
+      exchangeCount: resultExchange.data.length,
+      totalMarketCap,
+      totalVolume24h,
+    },
+  });
+});
 
 exports.searchTokens = catchAsync(async (req, res, next) => {
   const { count, search } = req.query;

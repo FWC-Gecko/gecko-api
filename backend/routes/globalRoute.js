@@ -13,6 +13,7 @@ const {
   getTokenOverviewById,
   getTokenMarketsById,
   getTokenHistoricalDataById,
+  getRecommendedData,
 } = require('../controllers/globalController');
 
 const {
@@ -30,6 +31,9 @@ const router = express();
 /**
  * Tokens
  */
+
+//  Get Recommended Data (Crypto Count, Exchange Count, Total MarketCap, Total Volume 24h)
+router.route('/recommend').get(getRecommendedData);
 //  Search tokens
 router.route('/tokens').get(searchTokens);
 
