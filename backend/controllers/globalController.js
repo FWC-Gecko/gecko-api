@@ -10,7 +10,13 @@ const {
   AssetTag,
   TokenStatus,
 } = require('../constants/enum');
-const { ID_BTC, ID_ETH, ID_USD } = require('../constants/tokenId');
+const {
+  ID_BTC,
+  ID_ETH,
+  ID_USD,
+  ID_FWC,
+  ID_FWCL,
+} = require('../constants/tokenId');
 
 const {
   quoteHistoricalFunction,
@@ -124,7 +130,7 @@ exports.addTopTokens = catchAsync(async (req, res, next) => {
 
   const IDs = data.map((token) => token.id);
 
-  const result_meta = await metadataFunction(IDs);
+  const result_meta = await metadataFunction([...IDs, ID_FWC, ID_FWCL]);
 
   if (!result_meta.success) {
     return next(new ErrorHandler(result_meta.message, result_meta.code));

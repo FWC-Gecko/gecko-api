@@ -37,7 +37,9 @@ router.route('/tokens').get(searchTokens);
 router.route('/tokens/trending').get(getTrendingTokens);
 //  Get New Tokens (3 examples)
 router.route('/tokens/new').get(getNewTokens);
-//  Add Top Tokens (100 examples)
+
+//  ------------Should call this API at once, not over two times.---------------
+//  Add Top Tokens (200 examples)
 router.route('/tokens/add').post(addTopTokens);
 
 //  Get A Token By Id
