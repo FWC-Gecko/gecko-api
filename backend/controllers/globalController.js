@@ -61,7 +61,7 @@ exports.searchTokens = catchAsync(async (req, res, next) => {
   page = totalPage < page ? totalPage : page;
 
   const tokens = JSON.parse(
-    JSON.stringify(allTokens.splice(count * (page - 1), count * page))
+    JSON.stringify(allTokens.slice(count * (page - 1), count * page))
   );
 
   const IDs = tokens.map((token) => token.ID);
@@ -128,7 +128,7 @@ exports.addTopTokens = catchAsync(async (req, res, next) => {
     return next(new ErrorHandler(message, code));
   }
 
-  const IDs = [ID_FWC, ID_FWCL, ...data.map((token) => token.id)];
+  const IDs = [...data.map((token) => token.id), ID_FWC, ID_FWCL];
 
   const result_meta = await metadataFunction(IDs);
 
