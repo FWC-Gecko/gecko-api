@@ -33,8 +33,11 @@ const quoteHistoricalFunction = async (ids, timeStart, timeEnd, interval) =>
     interval,
   });
 
-const quoteLatestFunction = async (ids) =>
-  await axiosFunction(QUOTE_LATEST_URL, { id: ids.join(',') });
+const quoteLatestFunction = async (ids, convertIds = []) => {
+  let params = { id: ids.join(',') };
+  if (convertIds.length) params.convert_id = convertIds.join(',');
+  return await axiosFunction(QUOTE_LATEST_URL, params);
+};
 
 const IDMapFunction = async () =>
   await axiosFunction(ID_MAP_URL, { limit: 200, sort: 'cmc_rank' });

@@ -10,6 +10,7 @@ const {
   AssetTag,
   TokenStatus,
 } = require('../constants/enum');
+const { ID_BTC, ID_ETH, ID_USD } = require('../constants/tokenId');
 
 const {
   quoteHistoricalFunction,
@@ -322,9 +323,10 @@ exports.getTokenById = catchAsync(async (req, res, next) => {
   }
 
   //  Quote Lastest
-  const { success, data, message, code } = await quoteLatestFunction([
-    token.ID,
-  ]);
+  const { success, data, message, code } = await quoteLatestFunction(
+    [token.ID],
+    [ID_BTC, ID_ETH, ID_USD] //  1: BTC, 1027: ETH, 2781: USD
+  );
 
   if (!success) {
     return next(new ErrorHandler(message, code));
@@ -343,21 +345,26 @@ exports.getTokenById = catchAsync(async (req, res, next) => {
   }
 
   token.description = result_meta.data[token.ID].description;
-  token.price = data[token.ID].quote.USD.price;
-  token.volume_24h = data[token.ID].quote.USD.volume_24h;
-  token.volume_change_24h = data[token.ID].quote.USD.volume_change_24h;
-  token.percent_change_1h = data[token.ID].quote.USD.percent_change_1h;
-  token.percent_change_24h = data[token.ID].quote.USD.percent_change_24h;
-  token.percent_change_7d = data[token.ID].quote.USD.percent_change_7d;
-  token.market_cap = data[token.ID].quote.USD.market_cap;
+  token.price_usd = data[token.ID].quote[ID_USD].price;
+  token.volume_24h_usd = data[token.ID].quote[ID_USD].volume_24h;
+  token.volume_change_24h_usd = data[token.ID].quote[ID_USD].volume_change_24h;
+  token.percent_change_1h_usd = data[token.ID].quote[ID_USD].percent_change_1h;
+  token.percent_change_24h_usd =
+    data[token.ID].quote[ID_USD].percent_change_24h;
+  token.percent_change_7d_usd = data[token.ID].quote[ID_USD].percent_change_7d;
+  token.market_cap_usd = data[token.ID].quote[ID_USD].market_cap;
   token.circulating_supply = data[token.ID].circulating_supply;
   token.cmc_rank = data[token.ID].cmc_rank;
-  token.market_cap_dominance = data[token.ID].quote.USD.market_cap_dominance;
-  token.fully_diluted_market_cap =
-    data[token.ID].quote.USD.fully_diluted_market_cap;
-  token.high_24h = result_ohlcv.data[token.ID].quote.USD.high;
-  token.low_24h = result_ohlcv.data[token.ID].quote.USD.low;
-
+  token.market_cap_dominance_usd =
+    data[token.ID].quote[ID_USD].market_cap_dominance;
+  token.fully_diluted_market_cap_usd =
+    data[token.ID].quote[ID_USD].fully_diluted_market_cap;
+  token.high_24h_usd = result_ohlcv.data[token.ID].quote.USD.high;
+  token.low_24h_usd = result_ohlcv.data[token.ID].quote.USD.low;
+  token.price_btc = data[token.ID].quote[ID_BTC].price;
+  token.price_change_24h_btc = data[token.ID].quote[ID_BTC].percent_change_24h;
+  token.price_eth = data[token.ID].quote[ID_ETH].price;
+  token.price_change_24h_eth = data[token.ID].quote[ID_ETH].percent_change_24h;
   res.status(200).json({
     success: true,
     data: { token },
