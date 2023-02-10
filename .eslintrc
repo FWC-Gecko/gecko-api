@@ -9,5 +9,6 @@
     "es2021": true,
     "node": true
   },
+  "ignorePatterns": ["frontend/*"],
   "rules": {}
 }
