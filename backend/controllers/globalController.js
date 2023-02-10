@@ -324,7 +324,7 @@ exports.listNewToken = catchAsync(async (req, res, next) => {
 exports.getPositionList = catchAsync(async (req, res, next) => {
   res.status(200).json({
     success: true,
-    data: { positons: Position },
+    data: { positions: Position },
   });
 });
 
