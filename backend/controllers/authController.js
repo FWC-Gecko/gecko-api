@@ -90,13 +90,13 @@ exports.sendPasscodeByEmail = catchAsync(async (req, res, next) => {
 
   try {
     // Send email with passcode
-    await sendEmail({
-      email,
-      templateId: process.env.SENDGRID_VERIFY_TEMPLATEID,
-      data: {
-        passcode,
-      },
-    });
+    // await sendEmail({
+    //   email,
+    //   templateId: process.env.SENDGRID_VERIFY_TEMPLATEID,
+    //   data: {
+    //     passcode,
+    //   },
+    // });
 
     await VerifyEmail.updateOne(
       { email },
