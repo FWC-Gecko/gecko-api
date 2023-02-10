@@ -41,7 +41,9 @@ const {
 
 exports.getRecommendedData = catchAsync(async (req, res, next) => {
   //  Get Crypto Count
-  const resultCryptos = await Token.find({ status: TokenStatus.Active });
+  const resultCryptos = await Token.find({ status: TokenStatus.Active }).select(
+    { ID: 1, _id: 0 }
+  );
   const IDs = resultCryptos.map((crypto) => crypto.ID);
 
   //  Get Total MarketCap & volume(24h)
