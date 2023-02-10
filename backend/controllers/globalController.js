@@ -128,7 +128,7 @@ exports.addTopTokens = catchAsync(async (req, res, next) => {
     return next(new ErrorHandler(message, code));
   }
 
-  const IDs = [...data.map((token) => token.id), ID_FWC, ID_FWCL];
+  const IDs = [ID_FWC, ID_FWCL, ...data.map((token) => token.id)];
 
   const result_meta = await metadataFunction(IDs);
 
