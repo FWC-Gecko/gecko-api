@@ -241,6 +241,7 @@ exports.getTrendingTokens = catchAsync(async (req, res, next) => {
           name: 1,
           symbol: 1,
           ID: 1,
+          logo: 1,
         })
         .sort({ createdAt: -1 })
         .limit(3)
@@ -274,6 +275,7 @@ exports.getNewTokens = catchAsync(async (req, res, next) => {
           name: 1,
           symbol: 1,
           ID: 1,
+          logo: 1,
         })
         .sort({ createdAt: -1 })
         .limit(3)
@@ -324,21 +326,31 @@ exports.listNewToken = catchAsync(async (req, res, next) => {
 exports.getPositionList = catchAsync(async (req, res, next) => {
   res.status(200).json({
     success: true,
-    data: { positions: Position },
+    data: {
+      positions: Position.map((position, index) => ({
+        index,
+        position,
+      })),
+    },
   });
 });
 
 exports.getBlockchainList = catchAsync(async (req, res, next) => {
   res.status(200).json({
     success: true,
-    data: { blockchains: Blockchain },
+    data: {
+      blockchains: Blockchain.map((blockchain, index) => ({
+        index,
+        blockchain,
+      })),
+    },
   });
 });
 
 exports.getAssetTagList = catchAsync(async (req, res, next) => {
   res.status(200).json({
     success: true,
-    data: { assetTags: AssetTag },
+    data: { assetTags: AssetTag.map((tag, index) => ({ index, tag })) },
   });
 });
 
