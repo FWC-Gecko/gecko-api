@@ -18,6 +18,9 @@ const {
 const {
   listNewTokenValidation,
   getTokenByIdValidation,
+  getTokenOverviewByIdValidation,
+  getTokenMarketsByIdValidation,
+  getTokenHistoricalDataByIdValidation,
 } = require('../validations/globalValidation');
 
 const validation = require('../middlewares/validation');
@@ -42,11 +45,21 @@ router
   .route('/token/:id')
   .get(...getTokenByIdValidation, validation, getTokenById);
 //  Get A Token Overview By Id
-router.route('/token/:id/overview').get(getTokenOverviewById);
+router
+  .route('/token/:id/overview')
+  .get(...getTokenOverviewByIdValidation, validation, getTokenOverviewById);
 //  Get markets
-router.route('/token/:id/markets').get(getTokenMarketsById);
+router
+  .route('/token/:id/markets')
+  .get(...getTokenMarketsByIdValidation, validation, getTokenMarketsById);
 //  Get Historical Data
-router.route('/token/:id/historicaldata').get(getTokenHistoricalDataById);
+router
+  .route('/token/:id/historicaldata')
+  .get(
+    ...getTokenHistoricalDataByIdValidation,
+    validation,
+    getTokenHistoricalDataById
+  );
 /**
  * List new token
  */

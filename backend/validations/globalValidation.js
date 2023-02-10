@@ -42,6 +42,15 @@ const linkValidation = (name) => [
     .withMessage('Not URL'),
 ];
 
+const idValidation = [
+  param('id')
+    .exists()
+    .withMessage('Not Existed')
+    .bail()
+    .isMongoId()
+    .withMessage('Not Mongo ID'),
+];
+
 const listNewTokenValidation = [
   body('userPosition')
     .exists()
@@ -72,13 +81,15 @@ const listNewTokenValidation = [
   ...stringValidation('cryptoAssetTags'),
 ];
 
-const getTokenByIdValidation = [
-  param('id')
-    .exists()
-    .withMessage('Not Existed')
-    .bail()
-    .isMongoId()
-    .withMessage('Not Mongo ID'),
-];
+const getTokenByIdValidation = idValidation;
+const getTokenOverviewByIdValidation = idValidation;
+const getTokenMarketsByIdValidation = idValidation;
+const getTokenHistoricalDataByIdValidation = idValidation;
 
-module.exports = { listNewTokenValidation, getTokenByIdValidation };
+module.exports = {
+  listNewTokenValidation,
+  getTokenByIdValidation,
+  getTokenOverviewByIdValidation,
+  getTokenMarketsByIdValidation,
+  getTokenHistoricalDataByIdValidation,
+};
