@@ -18,6 +18,10 @@ const verifyEmailSchema = new mongoose.Schema({
   //   default: new Date(Date.now() + VERIFY_EMAIL_EXPIRE * 1000),
   //   expires: VERIFY_EMAIL_EXPIRE,
   // },
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+  },
 });
 
 module.exports = mongoose.model('VerifyEmail', verifyEmailSchema);
