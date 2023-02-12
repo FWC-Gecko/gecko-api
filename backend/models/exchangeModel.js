@@ -18,6 +18,15 @@ const exchangeSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  logo: {
+    type: String,
+    required: true,
+  },
+  website: [{ type: String }],
+  twitter: [{ type: String }],
+  chat: [{ type: String }],
+  fee: [{ type: String }],
+  blog: [{ type: String }],
 });
 
 module.exports = mongoose.model('Exchange', exchangeSchema);

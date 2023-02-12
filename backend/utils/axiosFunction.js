@@ -1,14 +1,15 @@
 const axios = require('axios');
 
 const {
-  QUOTE_HOSTORICAL_URL,
-  QUOTE_LATEST_URL,
+  CRYPTO_QUOTE_HOSTORICAL_URL,
+  CRYPTO_QUOTE_LATEST_URL,
   CRYPTO_MAP_URL,
-  METADATA_URL,
+  CRYPTO_METADATA_URL,
   MARKET_PAIR_URL,
   OHLCV_HISTORICAL_URL,
   OHLCV_LATEST_URL,
   EXCHANGE_MAP_URL,
+  EXCAHNGE_METADATA_URL,
 } = require('../config/url');
 
 const axiosFunction = async (url, params) => {
@@ -26,28 +27,36 @@ const axiosFunction = async (url, params) => {
       };
 };
 
-const quoteHistoricalFunction = async (ids, timeStart, timeEnd, interval) =>
-  await axiosFunction(QUOTE_HOSTORICAL_URL, {
+const cryptoQuoteHistoricalFunction = async (
+  ids,
+  timeStart,
+  timeEnd,
+  interval
+) =>
+  await axiosFunction(CRYPTO_QUOTE_HOSTORICAL_URL, {
     id: ids.join(','),
     time_start: timeStart,
     time_end: timeEnd,
     interval,
   });
 
-const quoteLatestFunction = async (ids, convertIds = []) => {
+const cryptoQuoteLatestFunction = async (ids, convertIds = []) => {
   let params = { id: ids.join(',') };
   if (convertIds.length) params.convert_id = convertIds.join(',');
-  return await axiosFunction(QUOTE_LATEST_URL, params);
+  return await axiosFunction(CRYPTO_QUOTE_LATEST_URL, params);
 };
 
-const IDMapFunction = async () =>
+const cryptoMapFunction = async () =>
   await axiosFunction(CRYPTO_MAP_URL, { limit: 200, sort: 'cmc_rank' });
 
 const exchangeMapFunction = async () =>
   await axiosFunction(EXCHANGE_MAP_URL, { limit: 20, sort: 'volume_24h' });
 
-const metadataFunction = async (ids) =>
-  await axiosFunction(METADATA_URL, { id: ids.join(',') });
+const exchnageMetadataFunction = async (ids) =>
+  await axiosFunction(EXCAHNGE_METADATA_URL, { id: ids.join(',') });
+
+const cryptoMetadataFunction = async (ids) =>
+  await axiosFunction(CRYPTO_METADATA_URL, { id: ids.join(',') });
 
 const marketPairFunction = async (id) =>
   await axiosFunction(MARKET_PAIR_URL, { id });
@@ -59,12 +68,13 @@ const ohlcvLatestFunction = async (ids) =>
   await axiosFunction(OHLCV_LATEST_URL, { id: ids.join(',') });
 
 module.exports = {
-  quoteHistoricalFunction,
-  quoteLatestFunction,
-  IDMapFunction,
-  metadataFunction,
+  cryptoQuoteHistoricalFunction,
+  cryptoQuoteLatestFunction,
+  cryptoMapFunction,
+  cryptoMetadataFunction,
   marketPairFunction,
   ohlcvHistoricalFunction,
   ohlcvLatestFunction,
   exchangeMapFunction,
+  exchnageMetadataFunction,
 };

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const { Position, TokenStatus } = require('../constants/enum');
 
 const tokenSchema = new mongoose.Schema({
-  ID: { type: Number },
+  ID: { type: Number, required: true },
   // Step1: Your Information
   userPosition: { type: String, enum: Position, required: true },
   userName: { type: String, required: true },

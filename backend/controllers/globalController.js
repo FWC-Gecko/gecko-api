@@ -20,14 +20,15 @@ const {
 } = require('../constants/tokenId');
 
 const {
-  quoteHistoricalFunction,
-  quoteLatestFunction,
-  IDMapFunction,
-  metadataFunction,
+  cryptoQuoteHistoricalFunction,
+  cryptoQuoteLatestFunction,
+  cryptoMapFunction,
+  cryptoMetadataFunction,
   marketPairFunction,
   ohlcvHistoricalFunction,
   ohlcvLatestFunction,
   exchangeMapFunction,
+  exchnageMetadataFunction,
 } = require('../utils/axiosFunction');
 
 const {
@@ -48,7 +49,7 @@ exports.getRecommendedData = catchAsync(async (req, res, next) => {
   const IDs = resultCryptos.map((crypto) => crypto.ID);
 
   //  Get Total MarketCap & volume(24h)
-  const resultQuotes = await quoteLatestFunction(IDs);
+  const resultQuotes = await cryptoQuoteLatestFunction(IDs);
 
   if (!resultQuotes.success) {
     return next(new ErrorHandler(resultQuotes.message, resultQuotes.code));
@@ -112,12 +113,8 @@ exports.searchTokens = catchAsync(async (req, res, next) => {
     //  last 7 days with interval(6h)
     const timeStart = getBeforeDaysFromNow(7);
     const timeEnd = getCurrentTime();
-    const { success, data, code, message } = await quoteHistoricalFunction(
-      IDs,
-      timeStart,
-      timeEnd,
-      '6h'
-    );
+    const { success, data, code, message } =
+      await cryptoQuoteHistoricalFunction(IDs, timeStart, timeEnd, '6h');
     if (!success) {
       return next(new ErrorHandler(message, code));
     }
@@ -137,7 +134,9 @@ exports.searchTokens = catchAsync(async (req, res, next) => {
   }
 
   if (IDs && len) {
-    const { success, data, code, message } = await quoteLatestFunction(IDs);
+    const { success, data, code, message } = await cryptoQuoteLatestFunction(
+      IDs
+    );
     if (!success) {
       return next(new ErrorHandler(message, code));
     }
@@ -163,7 +162,7 @@ exports.searchTokens = catchAsync(async (req, res, next) => {
 });
 
 exports.addTopTokens = catchAsync(async (req, res, next) => {
-  const { success, data, code, message } = await IDMapFunction();
+  const { success, data, code, message } = await cryptoMapFunction();
 
   if (!success) {
     return next(new ErrorHandler(message, code));
@@ -171,13 +170,13 @@ exports.addTopTokens = catchAsync(async (req, res, next) => {
 
   const IDs = [...data.map((token) => token.id), ID_FWC, ID_FWCL];
 
-  const result_meta = await metadataFunction(IDs);
+  const result_meta = await cryptoMetadataFunction(IDs);
 
   if (!result_meta.success) {
     return next(new ErrorHandler(result_meta.message, result_meta.code));
   }
 
-  const result_quote_latest = await quoteLatestFunction(IDs);
+  const result_quote_latest = await cryptoQuoteLatestFunction(IDs);
 
   if (!result_quote_latest.success) {
     return next(
@@ -253,7 +252,9 @@ exports.getTrendingTokens = catchAsync(async (req, res, next) => {
   const len = IDs.length;
 
   if (IDs && len) {
-    const { success, data, code, message } = await quoteLatestFunction(IDs);
+    const { success, data, code, message } = await cryptoQuoteLatestFunction(
+      IDs
+    );
     if (!success) {
       return next(new ErrorHandler(message, code));
     }
@@ -287,7 +288,9 @@ exports.getNewTokens = catchAsync(async (req, res, next) => {
   const len = IDs.length;
 
   if (IDs && len) {
-    const { success, data, code, message } = await quoteLatestFunction(IDs);
+    const { success, data, code, message } = await cryptoQuoteLatestFunction(
+      IDs
+    );
     if (!success) {
       return next(new ErrorHandler(message, code));
     }
@@ -382,7 +385,7 @@ exports.getTokenById = catchAsync(async (req, res, next) => {
   }
 
   //  Quote Lastest
-  const { success, data, message, code } = await quoteLatestFunction(
+  const { success, data, message, code } = await cryptoQuoteLatestFunction(
     [token.ID],
     [ID_BTC, ID_ETH, ID_USD] //  1: BTC, 1027: ETH, 2781: USD
   );
@@ -391,7 +394,7 @@ exports.getTokenById = catchAsync(async (req, res, next) => {
     return next(new ErrorHandler(message, code));
   }
 
-  const result_meta = await metadataFunction([token.ID]);
+  const result_meta = await cryptoMetadataFunction([token.ID]);
 
   if (!result_meta.success) {
     return next(new ErrorHandler(result_meta.message, result_meta.code));
@@ -494,7 +497,7 @@ exports.getTokenOverviewById = catchAsync(async (req, res, next) => {
       return next(new ErrorHandler('Period Wrong', 403));
   }
 
-  const { success, data, message, code } = await quoteHistoricalFunction(
+  const { success, data, message, code } = await cryptoQuoteHistoricalFunction(
     [token.ID],
     timeStart,
     timeEnd,
@@ -617,11 +620,29 @@ exports.addNewExchanges = catchAsync(async (req, res, next) => {
     return next(new ErrorHandler(message, code));
   }
 
-  const exchanges = data.map((exchange) => ({
-    ID: exchange.id,
-    name: exchange.name,
-    slug: exchange.slug,
-  }));
+  const IDs = data.map((exchange) => exchange.id);
+
+  const resultMetadata = await exchnageMetadataFunction(IDs);
+
+  if (!resultMetadata.success) {
+    return next(new ErrorHandler(resultMetadata.message, resultMetadata.code));
+  }
+
+  let exchanges = [];
+
+  for (const ID of IDs) {
+    exchanges.push({
+      ID,
+      name: resultMetadata.data[ID].name,
+      slug: resultMetadata.data[ID].slug,
+      logo: resultMetadata.data[ID].logo,
+      website: resultMetadata.data[ID].urls.website,
+      twitter: resultMetadata.data[ID].urls.twitter,
+      chat: resultMetadata.data[ID].urls.chat,
+      fee: resultMetadata.data[ID].urls.fee,
+      blog: resultMetadata.data[ID].urls.blog,
+    });
+  }
 
   await Exchange.insertMany(exchanges);
 
