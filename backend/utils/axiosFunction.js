@@ -44,7 +44,7 @@ const IDMapFunction = async () =>
   await axiosFunction(CRYPTO_MAP_URL, { limit: 200, sort: 'cmc_rank' });
 
 const exchangeMapFunction = async () =>
-  await axiosFunction(EXCHANGE_MAP_URL, {});
+  await axiosFunction(EXCHANGE_MAP_URL, { limit: 20, sort: 'volume_24h' });
 
 const metadataFunction = async (ids) =>
   await axiosFunction(METADATA_URL, { id: ids.join(',') });

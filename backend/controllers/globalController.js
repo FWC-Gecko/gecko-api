@@ -1,6 +1,7 @@
 const catchAsync = require('../middlewares/catchAsync');
 
 const Token = require('../models/tokenModel');
+const Exchange = require('../models/exchangeModel');
 
 const ErrorHandler = require('../utils/errorHandler');
 
@@ -609,3 +610,25 @@ exports.getTokenHistoricalDataById = catchAsync(async (req, res, next) => {
     })),
   });
 });
+
+exports.addNewExchanges = catchAsync(async (req, res, next) => {
+  const { success, data, message, code } = await exchangeMapFunction();
+  if (!success) {
+    return next(new ErrorHandler(message, code));
+  }
+
+  const exchanges = data.map((exchange) => ({
+    ID: exchange.id,
+    name: exchange.name,
+    slug: exchange.slug,
+  }));
+
+  await Exchange.insertMany(exchanges);
+
+  res.status(200).json({
+    success: true,
+    message: 'New Exchanges Added',
+  });
+});
+
+exports.searchExchanges = catchAsync(async (req, res, next) => {});
