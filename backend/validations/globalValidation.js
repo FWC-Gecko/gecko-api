@@ -85,6 +85,14 @@ const getTokenByIdValidation = idValidation;
 const getTokenOverviewByIdValidation = idValidation;
 const getTokenMarketsByIdValidation = idValidation;
 const getTokenHistoricalDataByIdValidation = idValidation;
+const getExchangeByIdValidation = [
+  param('id')
+    .exists()
+    .withMessage('Not Existed')
+    .bail()
+    .isInt({ min: 0 })
+    .withMessage('Not Integer Or Out Of Range'),
+];
 
 module.exports = {
   listNewTokenValidation,
@@ -92,4 +100,5 @@ module.exports = {
   getTokenOverviewByIdValidation,
   getTokenMarketsByIdValidation,
   getTokenHistoricalDataByIdValidation,
+  getExchangeByIdValidation,
 };

@@ -14,8 +14,8 @@ const {
   getTokenMarketsById,
   getTokenHistoricalDataById,
   getRecommendedData,
-  addNewExchanges,
   searchExchanges,
+  getExchangeByExId,
 } = require('../controllers/globalController');
 
 const {
@@ -24,6 +24,7 @@ const {
   getTokenOverviewByIdValidation,
   getTokenMarketsByIdValidation,
   getTokenHistoricalDataByIdValidation,
+  getExchangeByIdValidation,
 } = require('../validations/globalValidation');
 
 const validation = require('../middlewares/validation');
@@ -73,10 +74,12 @@ router
  * Exchange Markets
  */
 //  ------------Should call this API at once, not over two times.---------------
-//  Add top new exchanges (20 examples)
-router.route('/exchange/add').post(addNewExchanges);
 //  Search exchanges
 router.route('/exchanges').get(searchExchanges);
+//  Get An Exchange By Exchange Id
+router
+  .route('/exchange/:id')
+  .get(...getExchangeByIdValidation, validation, getExchangeByExId);
 /**
  * List new token
  */

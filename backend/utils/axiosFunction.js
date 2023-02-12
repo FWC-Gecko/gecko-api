@@ -1,15 +1,18 @@
 const axios = require('axios');
 
 const {
-  CRYPTO_QUOTE_HOSTORICAL_URL,
-  CRYPTO_QUOTE_LATEST_URL,
-  CRYPTO_MAP_URL,
-  CRYPTO_METADATA_URL,
+  TOKEN_QUOTE_HISTORICAL_URL,
+  TOKEN_QUOTE_LATEST_URL,
+  TOKEN_MAP_URL,
+  TOKEN_METADATA_URL,
   MARKET_PAIR_URL,
   OHLCV_HISTORICAL_URL,
   OHLCV_LATEST_URL,
   EXCHANGE_MAP_URL,
-  EXCAHNGE_METADATA_URL,
+  EXCHANGE_METADATA_URL,
+  EXCHANGE_QUOTE_HISTORICAL_URL,
+  EXCHANGE_QUOTE_LATEST_URL,
+  EXCHANGE_LISTINGS_LATEST,
 } = require('../config/url');
 
 const axiosFunction = async (url, params) => {
@@ -27,36 +30,58 @@ const axiosFunction = async (url, params) => {
       };
 };
 
-const cryptoQuoteHistoricalFunction = async (
+const tokenQuoteHistoricalFunction = async (
   ids,
   timeStart,
   timeEnd,
   interval
 ) =>
-  await axiosFunction(CRYPTO_QUOTE_HOSTORICAL_URL, {
+  await axiosFunction(TOKEN_QUOTE_HISTORICAL_URL, {
     id: ids.join(','),
     time_start: timeStart,
     time_end: timeEnd,
     interval,
   });
 
-const cryptoQuoteLatestFunction = async (ids, convertIds = []) => {
+const tokenQuoteLatestFunction = async (ids, convertIds = []) => {
   let params = { id: ids.join(',') };
   if (convertIds.length) params.convert_id = convertIds.join(',');
-  return await axiosFunction(CRYPTO_QUOTE_LATEST_URL, params);
+  return await axiosFunction(TOKEN_QUOTE_LATEST_URL, params);
 };
 
-const cryptoMapFunction = async () =>
-  await axiosFunction(CRYPTO_MAP_URL, { limit: 200, sort: 'cmc_rank' });
+const tokenMapFunction = async () =>
+  await axiosFunction(TOKEN_MAP_URL, { limit: 200, sort: 'cmc_rank' });
+
+const tokenMetadataFunction = async (ids) =>
+  await axiosFunction(TOKEN_METADATA_URL, { id: ids.join(',') });
 
 const exchangeMapFunction = async () =>
   await axiosFunction(EXCHANGE_MAP_URL, { limit: 20, sort: 'volume_24h' });
 
-const exchnageMetadataFunction = async (ids) =>
-  await axiosFunction(EXCAHNGE_METADATA_URL, { id: ids.join(',') });
+const exchangeMetadataFunction = async (ids) =>
+  await axiosFunction(EXCHANGE_METADATA_URL, { id: ids.join(',') });
 
-const cryptoMetadataFunction = async (ids) =>
-  await axiosFunction(CRYPTO_METADATA_URL, { id: ids.join(',') });
+const exchangeQuoteHistoricalFunction = async (
+  ids,
+  timeStart,
+  timeEnd,
+  interval
+) =>
+  await axiosFunction(EXCHANGE_QUOTE_HISTORICAL_URL, {
+    id: ids.join(','),
+    time_start: timeStart,
+    time_end: timeEnd,
+    interval,
+  });
+
+const exchangeListingsLatestFunction = async () =>
+  await axiosFunction(EXCHANGE_LISTINGS_LATEST, {
+    limit: 20,
+    sort: 'exchange_score',
+  });
+
+const exchangeQuoteLatestFunction = async (ids) =>
+  await axiosFunction(EXCHANGE_QUOTE_LATEST_URL, { id: ids.join(',') });
 
 const marketPairFunction = async (id) =>
   await axiosFunction(MARKET_PAIR_URL, { id });
@@ -68,13 +93,16 @@ const ohlcvLatestFunction = async (ids) =>
   await axiosFunction(OHLCV_LATEST_URL, { id: ids.join(',') });
 
 module.exports = {
-  cryptoQuoteHistoricalFunction,
-  cryptoQuoteLatestFunction,
-  cryptoMapFunction,
-  cryptoMetadataFunction,
+  tokenQuoteHistoricalFunction,
+  tokenQuoteLatestFunction,
+  tokenMapFunction,
+  tokenMetadataFunction,
   marketPairFunction,
   ohlcvHistoricalFunction,
   ohlcvLatestFunction,
   exchangeMapFunction,
-  exchnageMetadataFunction,
+  exchangeMetadataFunction,
+  exchangeQuoteHistoricalFunction,
+  exchangeListingsLatestFunction,
+  exchangeQuoteLatestFunction,
 };

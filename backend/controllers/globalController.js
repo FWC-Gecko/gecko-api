@@ -1,7 +1,6 @@
 const catchAsync = require('../middlewares/catchAsync');
 
 const Token = require('../models/tokenModel');
-const Exchange = require('../models/exchangeModel');
 
 const ErrorHandler = require('../utils/errorHandler');
 
@@ -20,15 +19,18 @@ const {
 } = require('../constants/tokenId');
 
 const {
-  cryptoQuoteHistoricalFunction,
-  cryptoQuoteLatestFunction,
-  cryptoMapFunction,
-  cryptoMetadataFunction,
+  tokenQuoteHistoricalFunction,
+  tokenQuoteLatestFunction,
+  tokenMapFunction,
+  tokenMetadataFunction,
   marketPairFunction,
   ohlcvHistoricalFunction,
   ohlcvLatestFunction,
   exchangeMapFunction,
-  exchnageMetadataFunction,
+  exchangeMetadataFunction,
+  exchangeQuoteHistoricalFunction,
+  exchangeListingsLatestFunction,
+  exchangeQuoteLatestFunction,
 } = require('../utils/axiosFunction');
 
 const {
@@ -49,7 +51,7 @@ exports.getRecommendedData = catchAsync(async (req, res, next) => {
   const IDs = resultCryptos.map((crypto) => crypto.ID);
 
   //  Get Total MarketCap & volume(24h)
-  const resultQuotes = await cryptoQuoteLatestFunction(IDs);
+  const resultQuotes = await tokenQuoteLatestFunction(IDs);
 
   if (!resultQuotes.success) {
     return next(new ErrorHandler(resultQuotes.message, resultQuotes.code));
@@ -113,8 +115,12 @@ exports.searchTokens = catchAsync(async (req, res, next) => {
     //  last 7 days with interval(6h)
     const timeStart = getBeforeDaysFromNow(7);
     const timeEnd = getCurrentTime();
-    const { success, data, code, message } =
-      await cryptoQuoteHistoricalFunction(IDs, timeStart, timeEnd, '6h');
+    const { success, data, code, message } = await tokenQuoteHistoricalFunction(
+      IDs,
+      timeStart,
+      timeEnd,
+      '6h'
+    );
     if (!success) {
       return next(new ErrorHandler(message, code));
     }
@@ -134,7 +140,7 @@ exports.searchTokens = catchAsync(async (req, res, next) => {
   }
 
   if (IDs && len) {
-    const { success, data, code, message } = await cryptoQuoteLatestFunction(
+    const { success, data, code, message } = await tokenQuoteLatestFunction(
       IDs
     );
     if (!success) {
@@ -162,7 +168,7 @@ exports.searchTokens = catchAsync(async (req, res, next) => {
 });
 
 exports.addTopTokens = catchAsync(async (req, res, next) => {
-  const { success, data, code, message } = await cryptoMapFunction();
+  const { success, data, code, message } = await tokenMapFunction();
 
   if (!success) {
     return next(new ErrorHandler(message, code));
@@ -170,13 +176,13 @@ exports.addTopTokens = catchAsync(async (req, res, next) => {
 
   const IDs = [...data.map((token) => token.id), ID_FWC, ID_FWCL];
 
-  const result_meta = await cryptoMetadataFunction(IDs);
+  const result_meta = await tokenMetadataFunction(IDs);
 
   if (!result_meta.success) {
     return next(new ErrorHandler(result_meta.message, result_meta.code));
   }
 
-  const result_quote_latest = await cryptoQuoteLatestFunction(IDs);
+  const result_quote_latest = await tokenQuoteLatestFunction(IDs);
 
   if (!result_quote_latest.success) {
     return next(
@@ -252,7 +258,7 @@ exports.getTrendingTokens = catchAsync(async (req, res, next) => {
   const len = IDs.length;
 
   if (IDs && len) {
-    const { success, data, code, message } = await cryptoQuoteLatestFunction(
+    const { success, data, code, message } = await tokenQuoteLatestFunction(
       IDs
     );
     if (!success) {
@@ -288,7 +294,7 @@ exports.getNewTokens = catchAsync(async (req, res, next) => {
   const len = IDs.length;
 
   if (IDs && len) {
-    const { success, data, code, message } = await cryptoQuoteLatestFunction(
+    const { success, data, code, message } = await tokenQuoteLatestFunction(
       IDs
     );
     if (!success) {
@@ -385,7 +391,7 @@ exports.getTokenById = catchAsync(async (req, res, next) => {
   }
 
   //  Quote Lastest
-  const { success, data, message, code } = await cryptoQuoteLatestFunction(
+  const { success, data, message, code } = await tokenQuoteLatestFunction(
     [token.ID],
     [ID_BTC, ID_ETH, ID_USD] //  1: BTC, 1027: ETH, 2781: USD
   );
@@ -394,7 +400,7 @@ exports.getTokenById = catchAsync(async (req, res, next) => {
     return next(new ErrorHandler(message, code));
   }
 
-  const result_meta = await cryptoMetadataFunction([token.ID]);
+  const result_meta = await tokenMetadataFunction([token.ID]);
 
   if (!result_meta.success) {
     return next(new ErrorHandler(result_meta.message, result_meta.code));
@@ -497,7 +503,7 @@ exports.getTokenOverviewById = catchAsync(async (req, res, next) => {
       return next(new ErrorHandler('Period Wrong', 403));
   }
 
-  const { success, data, message, code } = await cryptoQuoteHistoricalFunction(
+  const { success, data, message, code } = await tokenQuoteHistoricalFunction(
     [token.ID],
     timeStart,
     timeEnd,
@@ -614,42 +620,102 @@ exports.getTokenHistoricalDataById = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.addNewExchanges = catchAsync(async (req, res, next) => {
-  const { success, data, message, code } = await exchangeMapFunction();
-  if (!success) {
-    return next(new ErrorHandler(message, code));
+exports.searchExchanges = catchAsync(async (req, res, next) => {
+  const resultListingsLatest = await exchangeListingsLatestFunction();
+
+  if (!resultListingsLatest.success) {
+    return next(
+      new ErrorHandler(resultListingsLatest.message, resultListingsLatest.code)
+    );
   }
 
-  const IDs = data.map((exchange) => exchange.id);
+  const IDs = resultListingsLatest.data.map((exchange) => exchange.id);
 
-  const resultMetadata = await exchnageMetadataFunction(IDs);
+  const resultMetadata = await exchangeMetadataFunction(IDs);
 
   if (!resultMetadata.success) {
     return next(new ErrorHandler(resultMetadata.message, resultMetadata.code));
   }
 
+  //  last 7 days with interval(6h)
+  const timeStart = getBeforeDaysFromNow(7);
+  const timeEnd = getCurrentTime();
+  const resultQuoteHistorical = await exchangeQuoteHistoricalFunction(
+    IDs,
+    timeStart,
+    timeEnd,
+    '6h'
+  );
+
   let exchanges = [];
 
-  for (const ID of IDs) {
+  for (const exchange of resultListingsLatest.data) {
     exchanges.push({
-      ID,
-      name: resultMetadata.data[ID].name,
-      slug: resultMetadata.data[ID].slug,
-      logo: resultMetadata.data[ID].logo,
-      website: resultMetadata.data[ID].urls.website,
-      twitter: resultMetadata.data[ID].urls.twitter,
-      chat: resultMetadata.data[ID].urls.chat,
-      fee: resultMetadata.data[ID].urls.fee,
-      blog: resultMetadata.data[ID].urls.blog,
+      logo: resultMetadata.data[exchange.id].logo,
+      name: exchange.name,
+      exchange_score: exchange.exchange_score,
+      volume_24h: exchange.quote.USD.volume_24h,
+      effective_liquidity_24h: exchange.quote.USD.effective_liquidity_24h,
+      weekly_visits: resultMetadata.data[exchange.id].weekly_visits,
+      num_market_pairs: exchange.num_market_pairs,
+      num_coins: exchange.num_coins,
+      fiats: resultMetadata.data[exchange.id].fiats,
+      quotes: resultQuoteHistorical.data[exchange.id].quotes.map((quote) => ({
+        timestamp: quote.timestamp,
+        volume_24h: quote.quote.USD.volume_24h,
+      })),
     });
   }
 
-  await Exchange.insertMany(exchanges);
-
-  res.status(200).json({
-    success: true,
-    message: 'New Exchanges Added',
-  });
+  res.status(200).json({ success: true, data: { exchanges } });
 });
 
-exports.searchExchanges = catchAsync(async (req, res, next) => {});
+exports.getExchangeByExId = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+
+  const resultMetadata = await exchangeMetadataFunction([id]);
+
+  if (!resultMetadata.success) {
+    return next(new ErrorHandler(resultMetadata.message, resultMetadata.code));
+  }
+
+  const resultQuoteLatest = await exchangeQuoteLatestFunction([id]);
+
+  if (!resultQuoteLatest.success) {
+    return next(
+      new ErrorHandler(resultQuoteLatest.message, resultQuoteLatest.code)
+    );
+  }
+
+  const {
+    name,
+    description,
+    logo,
+    urls: { fee, website, chat, twitter, blog },
+  } = resultMetadata.data[id];
+
+  const {
+    quote: {
+      USD: { volume_24h },
+    },
+  } = resultQuoteLatest.data[id];
+
+  res
+    .status(200)
+    .json({
+      success: true,
+      data: {
+        exchange: {
+          name,
+          description,
+          logo,
+          volume_24h,
+          website,
+          twitter,
+          chat,
+          fee,
+          blog,
+        },
+      },
+    });
+});
