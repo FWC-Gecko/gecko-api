@@ -6,8 +6,7 @@ const {
   getPositionList,
   getBlockchainList,
   getAssetTagList,
-  getTrendingTokens,
-  getNewTokens,
+  getFeaturedTokens,
   addTopTokens,
   getTokenById,
   getTokenOverviewById,
@@ -40,10 +39,8 @@ router.route('/recommend').get(getRecommendedData);
 //  Search tokens
 router.route('/tokens').get(searchTokens);
 
-//  Get Trending Tokens (3 examples)
-router.route('/tokens/trending').get(getTrendingTokens);
-//  Get New Tokens (3 examples)
-router.route('/tokens/new').get(getNewTokens);
+//  Get Featured Tokens (new tokens, volume_24h_change highest tokens, lowest tokens, 3 examples for each features)
+router.route('/tokens/featured').get(getFeaturedTokens);
 
 //  ------------Should call this API at once, not over two times.---------------
 //  Add Top Tokens (200 examples)

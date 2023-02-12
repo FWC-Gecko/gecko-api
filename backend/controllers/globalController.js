@@ -239,7 +239,11 @@ exports.addTopTokens = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getTrendingTokens = catchAsync(async (req, res, next) => {
+exports.getFeaturedTokens = catchAsync(async (req, res, next) => {
+  let newTokens = [];
+  let highestTokens = [];
+  let lowestTokens = [];
+
   const tokens = JSON.parse(
     JSON.stringify(
       await Token.find({ status: 'Active' })
@@ -250,7 +254,6 @@ exports.getTrendingTokens = catchAsync(async (req, res, next) => {
           logo: 1,
         })
         .sort({ createdAt: -1 })
-        .limit(3)
     )
   );
 
@@ -267,47 +270,22 @@ exports.getTrendingTokens = catchAsync(async (req, res, next) => {
     for (let i = 0; i < len; i++) {
       tokens[i].volume_change_24h = data[IDs[i]].quote.USD.volume_change_24h;
     }
+
+    newTokens = tokens.slice(0, 3);
+
+    tokens.sort((a, b) => {
+      if (a.volume_change_24h >= b.volume_change_24h) return 1;
+      else if (a.volume_change_24h < b.volume_change_24h) return -1;
+      return 0;
+    });
+
+    lowestTokens = tokens.slice(0, 3);
+    highestTokens = tokens.slice(-3);
   }
 
   res.status(200).json({
     success: true,
-    data: { tokens },
-  });
-});
-
-exports.getNewTokens = catchAsync(async (req, res, next) => {
-  const tokens = JSON.parse(
-    JSON.stringify(
-      await Token.find({ status: 'Active' })
-        .select({
-          name: 1,
-          symbol: 1,
-          ID: 1,
-          logo: 1,
-        })
-        .sort({ createdAt: -1 })
-        .limit(3)
-    )
-  );
-
-  const IDs = tokens.map((token) => token.ID);
-  const len = IDs.length;
-
-  if (IDs && len) {
-    const { success, data, code, message } = await tokenQuoteLatestFunction(
-      IDs
-    );
-    if (!success) {
-      return next(new ErrorHandler(message, code));
-    }
-    for (let i = 0; i < len; i++) {
-      tokens[i].volume_change_24h = data[IDs[i]].quote.USD.volume_change_24h;
-    }
-  }
-
-  res.status(200).json({
-    success: true,
-    data: { tokens },
+    data: { newTokens, lowestTokens, highestTokens },
   });
 });
 
@@ -700,22 +678,20 @@ exports.getExchangeByExId = catchAsync(async (req, res, next) => {
     },
   } = resultQuoteLatest.data[id];
 
-  res
-    .status(200)
-    .json({
-      success: true,
-      data: {
-        exchange: {
-          name,
-          description,
-          logo,
-          volume_24h,
-          website,
-          twitter,
-          chat,
-          fee,
-          blog,
-        },
+  res.status(200).json({
+    success: true,
+    data: {
+      exchange: {
+        name,
+        description,
+        logo,
+        volume_24h,
+        website,
+        twitter,
+        chat,
+        fee,
+        blog,
       },
-    });
+    },
+  });
 });
