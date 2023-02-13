@@ -734,7 +734,8 @@ exports.voteTokenById = catchAsync(async (req, res, next) => {
 
   //  Initialize with today
   if (!token.vote) token.vote = {};
-  if (!token.vote.hasOwnProperty(today)) token.vote[today] = { up: 0, down: 0 };
+  if (!Object.prototype.hasOwnProperty.call(token.vote, today))
+    token.vote[today] = { up: 0, down: 0 };
 
   //  Increment up vote
   token.vote = {
@@ -773,7 +774,8 @@ exports.unvoteTokenById = catchAsync(async (req, res, next) => {
 
   //  Initialize with today
   if (!token.vote) token.vote = {};
-  if (!token.vote.hasOwnProperty(today)) token.vote[today] = { up: 0, down: 0 };
+  if (!Object.prototype.hasOwnProperty.call(token.vote, today))
+    token.vote[today] = { up: 0, down: 0 };
 
   //  Increment down vote
   token.vote = {
@@ -811,7 +813,7 @@ exports.getTokenVoteById = catchAsync(async (req, res, next) => {
   const today = getFormattedDate(new Date());
 
   //  Initialize with today
-  if (!token.vote.hasOwnProperty(today)) {
+  if (!token.vote || !Object.prototype.hasOwnProperty.call(token.vote, today)) {
     return res.status(200).json({
       success: true,
       data: {
