@@ -14,6 +14,7 @@ const {
   getTokenMarketsById,
   getTokenHistoricalDataById,
   voteTokenById,
+  getTokenVoteById,
   unvoteTokenById,
   getRecommendedData,
   searchExchanges,
@@ -27,6 +28,7 @@ const {
   getTokenMarketsByIdValidation,
   getTokenHistoricalDataByIdValidation,
   getExchangeByIdValidation,
+  getTokenVoteByIdValidation,
   voteTokenByIdValidation,
   unvoteTokenByIdValidation,
 } = require('../validations/globalValidation');
@@ -75,13 +77,17 @@ router
     validation,
     getTokenHistoricalDataById
   );
-//  Vote A Token By Id
+//  Get Token Vote Status By Id
 router
   .route('/token/:id/vote')
+  .get(...getTokenVoteByIdValidation, validation, getTokenVoteById);
+//  Vote A Token By Id
+router
+  .route('/token/:id/up')
   .post(...voteTokenByIdValidation, validation, voteTokenById);
 //  Unvote A Token By Id
 router
-  .route('/token/:id/unvote')
+  .route('/token/:id/down')
   .post(...unvoteTokenByIdValidation, validation, unvoteTokenById);
 
 /**
