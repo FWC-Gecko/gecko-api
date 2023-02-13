@@ -52,10 +52,16 @@ const TokenStatus = {
   Active: 'Active',
 };
 
+const PostStatus = {
+  bullish: 'bullish',
+  bearish: 'bearish',
+};
+
 module.exports = {
   Role,
   Position,
   Blockchain,
   AssetTag,
   TokenStatus,
+  PostStatus,
 };
