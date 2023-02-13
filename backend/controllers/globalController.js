@@ -1,7 +1,11 @@
+const mongoose = require('mongoose');
+
 const catchAsync = require('../middlewares/catchAsync');
 
 const Token = require('../models/tokenModel');
 const User = require('../models/userModel');
+const Post = require('../models/postModel');
+const Comment = require('../models/commentModel');
 
 const ErrorHandler = require('../utils/errorHandler');
 
@@ -843,5 +847,109 @@ exports.getTokenVoteById = catchAsync(async (req, res, next) => {
         downPercent,
       },
     },
+  });
+});
+
+exports.getTopPosts = catchAsync(async (req, res, next) => {
+  const posts = await Post.aggregate([
+    {
+      $project: {
+        text: '$text',
+        createdAt: '$createdAt',
+        likes: { $size: '$likes' },
+        comments: { $size: '$comments' },
+        reposts: { $size: '$reposts' },
+        customer: { $toObjectId: '$customer' },
+      },
+    },
+    {
+      $sort: {
+        likes: -1,
+      },
+    },
+    {
+      $limit: 10,
+    },
+  ]);
+
+  await User.populate(posts, {
+    path: 'customer',
+    select: { userName: 1, avatar: 1 },
+  });
+
+  res.status(200).json({
+    success: true,
+    data: { posts },
+  });
+});
+
+exports.getLatestPosts = catchAsync(async (req, res, next) => {
+  //  Get 10 posts
+  const posts = await Post.aggregate([
+    {
+      $project: {
+        text: '$text',
+        createdAt: '$createdAt',
+        likes: { $size: '$likes' },
+        comments: { $size: '$comments' },
+        reposts: { $size: '$reposts' },
+        customer: { $toObjectId: '$customer' },
+      },
+    },
+    {
+      $limit: 10,
+    },
+  ]);
+
+  await User.populate(posts, {
+    path: 'customer',
+    select: { userName: 1, avatar: 1 },
+  });
+
+  res.status(200).json({
+    success: true,
+    data: { posts },
+  });
+});
+
+exports.getPostById = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+
+  const post = await Post.aggregate([
+    {
+      $match: {
+        _id: mongoose.Types.ObjectId(id),
+      },
+    },
+    {
+      $project: {
+        text: '$text',
+        createdAt: '$createdAt',
+        likesLen: { $size: '$likes' },
+        commentsLen: { $size: '$comments' },
+        repostsLen: { $size: '$reposts' },
+        comments: '$comments',
+        reposts: '$reposts',
+        customer: { $toObjectId: '$customer' },
+      },
+    },
+  ]);
+
+  await User.populate(post, {
+    path: 'customer',
+    select: { userName: 1, avatar: 1 },
+  });
+
+  await Comment.populate(post, { path: 'comments' });
+
+  await Post.populate(post, { path: 'reposts' });
+
+  if (!post.length) {
+    return next(new ErrorHandler('Post Not Found', 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    data: { post: post[0] },
   });
 });

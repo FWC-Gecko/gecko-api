@@ -141,7 +141,9 @@ exports.repostById = catchAsync(async (req, res, next) => {
     status,
   });
 
-  await newPost.save();
+  post.reposts.push(await newPost.save());
+
+  await post.save();
 
   res.status(200).json({
     success: true,
@@ -180,12 +182,12 @@ exports.likePostById = catchAsync(async (req, res, next) => {
     return next(new ErrorHandler('Post Not Found', 404));
   }
 
-  const likes = post.like.map((like) => like.toString());
+  const likes = post.likes.map((like) => like.toString());
 
   if (likes.includes(req.user._id.toString())) {
     return next(new ErrorHandler('Already Liked', 400));
   } else {
-    post.like.push(req.user);
+    post.likes.push(req.user);
     await post.save();
     res.status(200).json({
       success: true,
@@ -202,11 +204,11 @@ exports.dislikePostById = catchAsync(async (req, res, next) => {
     return next(new ErrorHandler('Post Not Found', 404));
   }
 
-  const likes = post.like.map((like) => like.toString());
+  const likes = post.likes.map((like) => like.toString());
 
   const index = likes.indexOf(req.user._id.toString());
   if (index !== -1) {
-    post.like = [
+    post.likes = [
       ...post.like.slice(0, index),
       ...post.like.slice(index + 1, post.like.length),
     ];

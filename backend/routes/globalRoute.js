@@ -19,6 +19,9 @@ const {
   getRecommendedData,
   searchExchanges,
   getExchangeByExId,
+  getTopPosts,
+  getLatestPosts,
+  getPostById,
 } = require('../controllers/globalController');
 
 const {
@@ -31,6 +34,7 @@ const {
   getTokenVoteByIdValidation,
   voteTokenByIdValidation,
   unvoteTokenByIdValidation,
+  getPostByIdValidation,
 } = require('../validations/globalValidation');
 
 const validation = require('../middlewares/validation');
@@ -103,17 +107,29 @@ router
 /**
  * List new token
  */
-//  List a new token
+//  List New Token
 router
   .route('/listtoken/add')
   .post(...listNewTokenValidation, validation, listNewToken);
-//  Get position list
+//  Get Position list
 router.route('/listtoken/positions').get(getPositionList);
 
-//  Get blockchain list
+//  Get Blockchain list
 router.route('/listtoken/blockchains').get(getBlockchainList);
 
-//  Get crypto asset tag list
+//  Get Crypto Asset Tag list
 router.route('/listtoken/assettags').get(getAssetTagList);
+
+/**
+ * Post
+ */
+//  Get Top Posts
+router.route('/posts/top').get(getTopPosts);
+//  Get Latest Posts
+router.route('/posts/latest').get(getLatestPosts);
+//  Get Post By Id
+router
+  .route('/post/:id')
+  .get(...getPostByIdValidation, validation, getPostById);
 
 module.exports = router;

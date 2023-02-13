@@ -96,6 +96,7 @@ const getExchangeByIdValidation = [
 const getTokenVoteByIdValidation = idValidation;
 const voteTokenByIdValidation = idValidation;
 const unvoteTokenByIdValidation = idValidation;
+const getPostByIdValidation = idValidation;
 
 module.exports = {
   listNewTokenValidation,
@@ -107,4 +108,5 @@ module.exports = {
   getTokenVoteByIdValidation,
   voteTokenByIdValidation,
   unvoteTokenByIdValidation,
+  getPostByIdValidation,
 };

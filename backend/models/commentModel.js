@@ -11,7 +11,7 @@ const commentSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  like: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   status: {
     type: String,
     enum: Object.keys(PostStatus),
