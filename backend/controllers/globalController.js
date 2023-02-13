@@ -261,20 +261,34 @@ exports.addTopTokens = catchAsync(async (req, res, next) => {
 });
 
 exports.getFeaturedTokens = catchAsync(async (req, res, next) => {
+  let trendingTokens = [];
   let newTokens = [];
   let highestTokens = [];
   let lowestTokens = [];
 
   const tokens = JSON.parse(
     JSON.stringify(
-      await Token.find({ status: 'Active' })
-        .select({
-          name: 1,
-          symbol: 1,
-          ID: 1,
-          logo: 1,
-        })
-        .sort({ createdAt: -1 })
+      await Token.aggregate([
+        {
+          $match: {
+            status: TokenStatus.Active,
+          },
+        },
+        {
+          $project: {
+            ID: '$ID',
+            name: '$name',
+            symbol: '$symbol',
+            logo: '$logo',
+            watchlist: { $size: { $ifNull: ['$watchlist', []] } },
+          },
+        },
+        {
+          $sort: {
+            createdAt: -1,
+          },
+        },
+      ])
     )
   );
 
@@ -294,6 +308,7 @@ exports.getFeaturedTokens = catchAsync(async (req, res, next) => {
 
     newTokens = tokens.slice(0, 3);
 
+    //  Sort By volume_change_24h accordingly
     tokens.sort((a, b) => {
       if (a.volume_change_24h >= b.volume_change_24h) return 1;
       else if (a.volume_change_24h < b.volume_change_24h) return -1;
@@ -302,11 +317,20 @@ exports.getFeaturedTokens = catchAsync(async (req, res, next) => {
 
     lowestTokens = tokens.slice(0, 3);
     highestTokens = tokens.slice(-3);
+
+    //  Sort By Watchlist Count descendingly
+    tokens.sort((a, b) => {
+      if (a.watchlist <= b.watchlist) return 1;
+      else if (a.watchlist > b.watchlist) return -1;
+      return 0;
+    });
+
+    trendingTokens = tokens.slice(0, 3);
   }
 
   res.status(200).json({
     success: true,
-    data: { newTokens, lowestTokens, highestTokens },
+    data: { trendingTokens, newTokens, lowestTokens, highestTokens },
   });
 });
 

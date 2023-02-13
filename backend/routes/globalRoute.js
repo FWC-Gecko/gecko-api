@@ -54,7 +54,7 @@ router.route('/recommend').get(getRecommendedData);
 //  Search tokens
 router.route('/tokens').get(searchTokens);
 
-//  Get Featured Tokens (new tokens, volume_24h_change highest tokens, lowest tokens, 3 examples for each features)
+//  Get Featured Tokens (trending tokens, new tokens, volume_24h_change highest tokens, lowest tokens, 3 examples for each features)
 router.route('/tokens/featured').get(getFeaturedTokens);
 
 //  ------------Should call this API at once, not over two times.---------------

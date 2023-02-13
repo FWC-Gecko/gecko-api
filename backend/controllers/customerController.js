@@ -10,6 +10,9 @@ const { TokenStatus } = require('../constants/enum');
 
 exports.followCommunity = catchAsync(async (req, res, next) => {
   const user = req.user;
+  if (user.communityFollow) {
+    return next(new ErrorHandler('Already Followed', 400));
+  }
   user.communityFollow = true;
   await user.save();
   res.status(200).json({
@@ -20,6 +23,9 @@ exports.followCommunity = catchAsync(async (req, res, next) => {
 
 exports.unfollowCommunity = catchAsync(async (req, res, next) => {
   const user = req.user;
+  if (!user.communityFollow) {
+    return next(new ErrorHandler('Already Unfollowed', 400));
+  }
   user.communityFollow = false;
   await user.save();
   res.status(200).json({

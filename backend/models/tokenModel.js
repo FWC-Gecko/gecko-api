@@ -56,7 +56,7 @@ const tokenSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
-  watchlist: [{ type: String }],
+  watchlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   vote: { type: mongoose.Schema.Types.Mixed, default: {} },
 });
 
