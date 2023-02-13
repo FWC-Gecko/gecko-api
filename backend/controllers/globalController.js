@@ -722,3 +722,81 @@ exports.getExchangeByExId = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.voteTokenById = catchAsync(async (req, res, next) => {
+  const token = await Token.findById(req.params.id);
+
+  if (!token) {
+    return next(new ErrorHandler('Token Not Found'), 404);
+  }
+
+  const today = getFormattedDate(new Date());
+
+  //  Initialize with today
+  if (!token.vote) token.vote = {};
+  if (!token.vote.hasOwnProperty(today)) token.vote[today] = { up: 0, down: 0 };
+
+  //  Increment up vote
+  token.vote = {
+    ...token.vote,
+    [today]: { ...token.vote[today], up: token.vote[today].up + 1 },
+  };
+
+  const newToken = await token.save();
+  console.log(newToken);
+  const upPercent =
+    (token.vote[today].up / (token.vote[today].up + token.vote[today].down)) *
+    100;
+  const downPercent = 100 - upPercent;
+
+  res.status(200).json({
+    success: true,
+    data: {
+      vote: {
+        timestamp: new Date(),
+        ...token.vote[today],
+        upPercent,
+        downPercent,
+      },
+    },
+  });
+});
+
+exports.unvoteTokenById = catchAsync(async (req, res, next) => {
+  const token = await Token.findById(req.params.id);
+
+  if (!token) {
+    return next(new ErrorHandler('Token Not Found'), 404);
+  }
+
+  const today = getFormattedDate(new Date());
+
+  //  Initialize with today
+  if (!token.vote) token.vote = {};
+  if (!token.vote.hasOwnProperty(today)) token.vote[today] = { up: 0, down: 0 };
+
+  //  Increment down vote
+  token.vote = {
+    ...token.vote,
+    [today]: { ...token.vote[today], down: token.vote[today].down + 1 },
+  };
+
+  await token.save();
+
+  const upPercent =
+    (token.vote[today].up / (token.vote[today].up + token.vote[today].down)) *
+    100;
+  const downPercent = 100 - upPercent;
+
+  res.status(200).json({
+    success: true,
+    data: {
+      vote: {
+        timestamp: new Date(),
+        ...token.vote[today],
+        upPercent,
+        downPercent,
+      },
+    },
+  });
+});

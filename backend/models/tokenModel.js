@@ -57,6 +57,7 @@ const tokenSchema = new mongoose.Schema({
     default: Date.now(),
   },
   watchlist: [{ type: String }],
+  vote: { type: mongoose.Schema.Types.Mixed, default: {} },
 });
 
 module.exports = mongoose.model('Token', tokenSchema);

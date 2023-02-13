@@ -13,6 +13,8 @@ const {
   getTokenOverviewById,
   getTokenMarketsById,
   getTokenHistoricalDataById,
+  voteTokenById,
+  unvoteTokenById,
   getRecommendedData,
   searchExchanges,
   getExchangeByExId,
@@ -25,6 +27,8 @@ const {
   getTokenMarketsByIdValidation,
   getTokenHistoricalDataByIdValidation,
   getExchangeByIdValidation,
+  voteTokenByIdValidation,
+  unvoteTokenByIdValidation,
 } = require('../validations/globalValidation');
 
 const validation = require('../middlewares/validation');
@@ -33,6 +37,7 @@ const router = express();
 /**
  * Community
  */
+//  Get the count of followers
 router.route('/community/followers/count').get(getCommunityFollowerCount);
 /**
  * Tokens
@@ -70,6 +75,14 @@ router
     validation,
     getTokenHistoricalDataById
   );
+//  Vote A Token By Id
+router
+  .route('/token/:id/vote')
+  .post(...voteTokenByIdValidation, validation, voteTokenById);
+//  Unvote A Token By Id
+router
+  .route('/token/:id/unvote')
+  .post(...unvoteTokenByIdValidation, validation, unvoteTokenById);
 
 /**
  * Exchange Markets

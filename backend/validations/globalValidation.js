@@ -93,6 +93,8 @@ const getExchangeByIdValidation = [
     .isInt({ min: 0 })
     .withMessage('Not Integer Or Out Of Range'),
 ];
+const voteTokenByIdValidation = idValidation;
+const unvoteTokenByIdValidation = idValidation;
 
 module.exports = {
   listNewTokenValidation,
@@ -101,4 +103,6 @@ module.exports = {
   getTokenMarketsByIdValidation,
   getTokenHistoricalDataByIdValidation,
   getExchangeByIdValidation,
+  voteTokenByIdValidation,
+  unvoteTokenByIdValidation,
 };
