@@ -521,6 +521,13 @@ exports.getTokenMarketsById = catchAsync(async (req, res, next) => {
   }
 
   const marketPairs = data.market_pairs;
+  const marketIDs = marketPairs.map((market) => market.exchange.id);
+
+  const resultMetadata = await exchangeMetadataFunction(marketIDs);
+
+  if (!resultMetadata.success) {
+    return next(new ErrorHandler(resultMetadata.message, resultMetadata.code));
+  }
 
   //  Seperated By Category (spot, derivatives, futures)
 
@@ -531,6 +538,7 @@ exports.getTokenMarketsById = catchAsync(async (req, res, next) => {
 
     if (category === 'spot') {
       result['spot'].push({
+        logo: resultMetadata.data[exchange.id].logo,
         source: exchange.name,
         pairs: market_pair,
         price: quote.USD.price,
@@ -540,6 +548,7 @@ exports.getTokenMarketsById = catchAsync(async (req, res, next) => {
       });
     } else if (category === 'derivatives') {
       result['perpetual'].push({
+        logo: resultMetadata.data[exchange.id].logo,
         source: exchange.name,
         pairs: market_pair,
         price: quote.USD.price,
@@ -547,6 +556,7 @@ exports.getTokenMarketsById = catchAsync(async (req, res, next) => {
       });
     } else if (category === 'futures') {
       result['futures'].push({
+        logo: resultMetadata.data[exchange.id].logo,
         source: exchange.name,
         pairs: market_pair,
         price: quote.USD.price,
