@@ -1,6 +1,8 @@
 const express = require('express');
 
 const {
+  followCommunity,
+  unfollowCommunity,
   getWatchlist,
   addWatchlist,
   deleteWatchlist,
@@ -17,6 +19,18 @@ const { isAuthenticated, isCustomer } = require('../middlewares/auth');
 
 const router = express();
 
+/**
+ * Customer
+ */
+router
+  .route('/community/follow')
+  .post(isAuthenticated, isCustomer, followCommunity);
+router
+  .route('/community/unfollow')
+  .post(isAuthenticated, isCustomer, unfollowCommunity);
+/**
+ * Watchlist
+ */
 router
   .route('/watchlist/token/:id')
   // Check if the token is in the customer's watchlist

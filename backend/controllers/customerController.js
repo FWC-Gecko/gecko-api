@@ -6,6 +6,26 @@ const ErrorHandler = require('../utils/errorHandler');
 
 const { TokenStatus } = require('../constants/enum');
 
+exports.followCommunity = catchAsync(async (req, res, next) => {
+  const user = req.user;
+  user.communityFollow = true;
+  await user.save();
+  res.status(200).json({
+    success: true,
+    message: 'Follwed Community',
+  });
+});
+
+exports.unfollowCommunity = catchAsync(async (req, res, next) => {
+  const user = req.user;
+  user.communityFollow = false;
+  await user.save();
+  res.status(200).json({
+    success: true,
+    message: 'Unfollwed Community',
+  });
+});
+
 exports.getWatchlist = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const userId = req.user._id.toString();

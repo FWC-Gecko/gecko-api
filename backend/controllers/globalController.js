@@ -1,6 +1,7 @@
 const catchAsync = require('../middlewares/catchAsync');
 
 const Token = require('../models/tokenModel');
+const User = require('../models/userModel');
 
 const ErrorHandler = require('../utils/errorHandler');
 
@@ -42,6 +43,22 @@ const {
   getFirstDayOfThisYear,
   getFormattedDate,
 } = require('../utils/dateFunction');
+
+exports.getCommunityFollowerCount = catchAsync(async (req, res, next) => {
+  const count = await User.aggregate([
+    { $match: { communityFollow: true } },
+    { $count: 'follower_count' },
+  ]);
+
+  console.log(count);
+
+  res.status(200).json({
+    success: true,
+    data: {
+      count: count.length ? count[0].follower_count : 0,
+    },
+  });
+});
 
 exports.getRecommendedData = catchAsync(async (req, res, next) => {
   //  Get Crypto Count

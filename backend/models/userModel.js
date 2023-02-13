@@ -44,6 +44,11 @@ const userSchema = new mongoose.Schema({
     enum: Object.keys(Role),
     required: true,
   },
+  communityFollow: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
 
   resetPasswordToken: String,
   resetPasswordExpiry: Date,

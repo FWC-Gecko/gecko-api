@@ -1,6 +1,7 @@
 const express = require('express');
 
 const {
+  getCommunityFollowerCount,
   searchTokens,
   listNewToken,
   getPositionList,
@@ -29,7 +30,10 @@ const {
 const validation = require('../middlewares/validation');
 
 const router = express();
-
+/**
+ * Community
+ */
+router.route('/community/followers/count').get(getCommunityFollowerCount);
 /**
  * Tokens
  */
