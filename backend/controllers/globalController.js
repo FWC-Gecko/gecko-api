@@ -742,8 +742,8 @@ exports.voteTokenById = catchAsync(async (req, res, next) => {
     [today]: { ...token.vote[today], up: token.vote[today].up + 1 },
   };
 
-  const newToken = await token.save();
-  console.log(newToken);
+  await token.save();
+
   const upPercent =
     (token.vote[today].up / (token.vote[today].up + token.vote[today].down)) *
     100;
