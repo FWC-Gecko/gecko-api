@@ -87,7 +87,7 @@ const marketPairFunction = async (id) =>
   await axiosFunction(MARKET_PAIR_URL, { id });
 
 const ohlcvHistoricalFunction = async (id) =>
-  await axiosFunction(OHLCV_HISTORICAL_URL, { id });
+  await axiosFunction(OHLCV_HISTORICAL_URL, { id, count: 21 });
 
 const ohlcvLatestFunction = async (ids) =>
   await axiosFunction(OHLCV_LATEST_URL, { id: ids.join(',') });
