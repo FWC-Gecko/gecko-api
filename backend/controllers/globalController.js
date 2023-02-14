@@ -54,8 +54,6 @@ exports.getCommunityFollowerCount = catchAsync(async (req, res, next) => {
     { $count: 'follower_count' },
   ]);
 
-  console.log(count);
-
   res.status(200).json({
     success: true,
     data: {
