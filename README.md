@@ -4,15 +4,15 @@
 
 ### 📗 Messaging
 
-- [] Sendgrid
+- [ ] Sendgrid
 
 ### 📗 Storage
 
-- [] AWS S3 Object
+- [ ] AWS S3 Object
 
 ### 📗 Database
 
-- [] MongoDB Atlas
+- [x] MongoDB Atlas
 
 ## 📘 Security
 

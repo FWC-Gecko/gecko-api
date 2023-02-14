@@ -81,16 +81,13 @@ const listNewTokenValidation = [
   ...stringValidation('cryptoAssetTags'),
 ];
 const searchTokensValidation = [
-  query('search')
+  query('count')
     .exists()
     .withMessage('Not Existed')
     .bail()
-    .notEmpty()
-    .withMessage('Empty')
-    .bail()
-    .isString()
-    .withMessage('Not String'),
-  query('count')
+    .isInt({ min: 0 })
+    .withMessage('Not Integer Or Out Of Range'),
+  query('page')
     .exists()
     .withMessage('Not Existed')
     .bail()
