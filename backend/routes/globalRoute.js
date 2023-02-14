@@ -25,6 +25,7 @@ const {
 } = require('../controllers/globalController');
 
 const {
+  searchTokensValidation,
   listNewTokenValidation,
   getTokenByIdValidation,
   getTokenOverviewByIdValidation,
@@ -52,7 +53,9 @@ router.route('/community/followers/count').get(getCommunityFollowerCount);
 //  Get Recommended Data (Crypto Count, Exchange Count, Total MarketCap, Total Volume 24h)
 router.route('/recommend').get(getRecommendedData);
 //  Search tokens
-router.route('/tokens').get(searchTokens);
+router
+  .route('/tokens')
+  .get(...searchTokensValidation, validation, searchTokens);
 
 //  Get Featured Tokens (trending tokens, new tokens, volume_24h_change highest tokens, lowest tokens, 3 examples for each features)
 router.route('/tokens/featured').get(getFeaturedTokens);

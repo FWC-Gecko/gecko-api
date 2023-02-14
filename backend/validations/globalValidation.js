@@ -1,4 +1,4 @@
-const { body, param } = require('express-validator');
+const { body, param, query } = require('express-validator');
 
 const { Position, Blockchain } = require('../constants/enum');
 
@@ -80,7 +80,23 @@ const listNewTokenValidation = [
   ...linkValidation('website1'),
   ...stringValidation('cryptoAssetTags'),
 ];
-
+const searchTokensValidation = [
+  query('search')
+    .exists()
+    .withMessage('Not Existed')
+    .bail()
+    .notEmpty()
+    .withMessage('Empty')
+    .bail()
+    .isString()
+    .withMessage('Not String'),
+  query('count')
+    .exists()
+    .withMessage('Not Existed')
+    .bail()
+    .isInt({ min: 0 })
+    .withMessage('Not Integer Or Out Of Range'),
+];
 const getTokenByIdValidation = idValidation;
 const getTokenOverviewByIdValidation = idValidation;
 const getTokenMarketsByIdValidation = idValidation;
@@ -99,6 +115,7 @@ const unvoteTokenByIdValidation = idValidation;
 const getPostByIdValidation = idValidation;
 
 module.exports = {
+  searchTokensValidation,
   listNewTokenValidation,
   getTokenByIdValidation,
   getTokenOverviewByIdValidation,

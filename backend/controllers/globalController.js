@@ -306,15 +306,15 @@ exports.getFeaturedTokens = catchAsync(async (req, res, next) => {
       return next(new ErrorHandler(message, code));
     }
     for (let i = 0; i < len; i++) {
-      tokens[i].volume_change_24h = data[IDs[i]].quote.USD.volume_change_24h;
+      tokens[i].percent_change_24h = data[IDs[i]].quote.USD.percent_change_24h;
     }
 
     newTokens = tokens.slice(0, 3);
 
-    //  Sort By volume_change_24h accordingly
+    //  Sort By percent_change_24h accordingly
     tokens.sort((a, b) => {
-      if (a.volume_change_24h >= b.volume_change_24h) return 1;
-      else if (a.volume_change_24h < b.volume_change_24h) return -1;
+      if (a.percent_change_24h >= b.percent_change_24h) return 1;
+      else if (a.percent_change_24h < b.percent_change_24h) return -1;
       return 0;
     });
 
