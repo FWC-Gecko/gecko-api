@@ -74,10 +74,10 @@ const exchangeQuoteHistoricalFunction = async (
     interval,
   });
 
-const exchangeListingsLatestFunction = async () =>
+const exchangeListingsLatestFunction = async (category) =>
   await axiosFunction(EXCHANGE_LISTINGS_LATEST, {
-    limit: 20,
     sort: 'exchange_score',
+    category,
   });
 
 const exchangeQuoteLatestFunction = async (ids) =>

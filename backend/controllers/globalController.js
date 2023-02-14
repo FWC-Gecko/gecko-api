@@ -111,7 +111,10 @@ exports.searchTokens = catchAsync(async (req, res, next) => {
   //  Get all token list
   const allTokens = await Token.find({
     status: 'Active',
-    name: { $regex: search, $options: 'i' },
+    $or: [
+      { name: { $regex: search, $options: 'i' } },
+      { symbol: { $regex: search, $options: 'i' } },
+    ],
   }).select({
     name: 1,
     symbol: 1,
@@ -654,15 +657,27 @@ exports.getTokenHistoricalDataById = catchAsync(async (req, res, next) => {
 });
 
 exports.searchExchanges = catchAsync(async (req, res, next) => {
-  const resultListingsLatest = await exchangeListingsLatestFunction();
-
+  const resultListingsLatest = await exchangeListingsLatestFunction('spot');
   if (!resultListingsLatest.success) {
     return next(
       new ErrorHandler(resultListingsLatest.message, resultListingsLatest.code)
     );
   }
 
-  const IDs = resultListingsLatest.data.map((exchange) => exchange.id);
+  let listings = [];
+
+  //  Extract Spot Exchanges
+  for (const exchange of resultListingsLatest.data) {
+    if (
+      exchange.num_market_pairs != -1 &&
+      exchange.quote.USD.effective_liquidity_24h != null
+    ) {
+      listings.push(exchange);
+    }
+    if (listings.length === 20) break;
+  }
+
+  const IDs = listings.map((exchange) => exchange.id);
 
   const resultMetadata = await exchangeMetadataFunction(IDs);
 
@@ -682,7 +697,7 @@ exports.searchExchanges = catchAsync(async (req, res, next) => {
 
   let exchanges = [];
 
-  for (const exchange of resultListingsLatest.data) {
+  for (const exchange of listings) {
     exchanges.push({
       logo: resultMetadata.data[exchange.id].logo,
       name: exchange.name,
