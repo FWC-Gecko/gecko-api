@@ -1,15 +1,50 @@
-const { body, param } = require('express-validator');
+const { body, param, query } = require('express-validator');
 
-const searchCustomersValidation = [];
-const getCustomerByIdValidation = [];
-const deleteCustomerByIdValidation = [];
-const getTokenByIdValidation = [];
+//  Unit Validation
+const paramIdValidation = [
+  param('id')
+    .exists()
+    .withMessage('Not Existed')
+    .bail()
+    .isMongoId()
+    .withMessage('Not Mongo ID'),
+];
+
+const queryNumberValidation = (name) => [
+  query(name)
+    .exists()
+    .withMessage('Not Existed')
+    .bail()
+    .isInt({ min: 1 })
+    .withMessage('Not Integer Or Out Of Range'),
+];
+
+//  Main Validation
+const searchCustomersValidation = [
+  ...queryNumberValidation('count'),
+  ...queryNumberValidation('page'),
+];
+const getCustomerByIdValidation = paramIdValidation;
+const deleteCustomerByIdValidation = paramIdValidation;
+const getTokenByIdValidation = paramIdValidation;
 const updateTokenByIdValidation = [];
-const deleteTokenByIdValidation = [];
-const searchInReviewTokensValidation = [];
-const searchPendingTokensValidation = [];
-const searchActiveTokensValidation = [];
-const searchUpdateRequestedTokensValidation = [];
+const deleteTokenByIdValidation = paramIdValidation;
+const searchInReviewTokensValidation = [
+  ...queryNumberValidation('count'),
+  ...queryNumberValidation('page'),
+];
+const searchPendingTokensValidation = [
+  ...queryNumberValidation('count'),
+  ...queryNumberValidation('page'),
+];
+const searchActiveTokensValidation = [
+  ...queryNumberValidation('count'),
+  ...queryNumberValidation('page'),
+];
+const searchUpdateRequestedTokensValidation = [
+  ...queryNumberValidation('count'),
+  ...queryNumberValidation('page'),
+];
 const approveInReviewTokenByIdValidation = [];
 const refuseInReviewTokenByIdValidation = [];
 const approvePendingTokenByIdValidation = [];
@@ -17,14 +52,14 @@ const refusePendingTokenByIdValidation = [];
 const approveUpdateRequestedTokenByIdValidation = [];
 const refuseUpdateRequestedTokenByIdValidation = [];
 const searchPostsValidation = [];
-const getPostByIdValidation = [];
+const getPostByIdValidation = paramIdValidation;
 const updatePostByIdValidation = [];
-const deletePostByIdValidation = [];
+const deletePostByIdValidation = paramIdValidation;
 const searchNewsValidation = [];
 const addNewsValidation = [];
-const getNewsByIdValidation = [];
+const getNewsByIdValidation = paramIdValidation;
 const updateNewsByIdValidation = [];
-const deleteNewsByIdValidation = [];
+const deleteNewsByIdValidation = paramIdValidation;
 
 module.exports = {
   searchCustomersValidation,
