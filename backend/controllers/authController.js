@@ -56,9 +56,9 @@ exports.loginUser = catchAsync(async (req, res, next) => {
     return next(new ErrorHandler("Password Doesn't Match", 401));
   }
 
-  if (!user.verified) {
-    return next(new ErrorHandler('Must Be Verified By Email', 401));
-  }
+  // if (!user.verified) {
+  //   return next(new ErrorHandler('Must Be Verified By Email', 401));
+  // }
 
   sendToken(user, 201, res);
 });
