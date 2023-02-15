@@ -781,7 +781,6 @@ exports.getMarketsOfExchangeByExId = catchAsync(async (req, res, next) => {
   const pairs = { spot: [], perpetual: [], futures: [] };
 
   for (const pair of data.market_pairs) {
-    console.log(pair.category);
     if (
       pair.category === 'spot' ||
       pair.category === 'perpetual' ||
