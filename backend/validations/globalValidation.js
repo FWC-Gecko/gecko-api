@@ -98,14 +98,15 @@ const getTokenByIdValidation = idValidation;
 const getTokenOverviewByIdValidation = idValidation;
 const getTokenMarketsByIdValidation = idValidation;
 const getTokenHistoricalDataByIdValidation = idValidation;
-const getExchangeByIdValidation = [
-  param('id')
+const getExchangeByExIdValidation = [
+  param('exchangeId')
     .exists()
     .withMessage('Not Existed')
     .bail()
     .isInt({ min: 0 })
     .withMessage('Not Integer Or Out Of Range'),
 ];
+const getMarketsOfExchangeByExIdValidation = getExchangeByExIdValidation;
 const getTokenVoteByIdValidation = idValidation;
 const voteTokenByIdValidation = idValidation;
 const unvoteTokenByIdValidation = idValidation;
@@ -118,7 +119,8 @@ module.exports = {
   getTokenOverviewByIdValidation,
   getTokenMarketsByIdValidation,
   getTokenHistoricalDataByIdValidation,
-  getExchangeByIdValidation,
+  getExchangeByExIdValidation,
+  getMarketsOfExchangeByExIdValidation,
   getTokenVoteByIdValidation,
   voteTokenByIdValidation,
   unvoteTokenByIdValidation,

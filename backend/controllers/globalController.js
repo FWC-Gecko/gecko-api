@@ -28,7 +28,7 @@ const {
   tokenQuoteLatestFunction,
   tokenMapFunction,
   tokenMetadataFunction,
-  marketPairFunction,
+  tokenMarketPairLatestFunction,
   ohlcvHistoricalFunction,
   ohlcvLatestFunction,
   exchangeMapFunction,
@@ -36,6 +36,7 @@ const {
   exchangeQuoteHistoricalFunction,
   exchangeListingsLatestFunction,
   exchangeQuoteLatestFunction,
+  exchangeMarketPairLatestFunction,
 } = require('../utils/axiosFunction');
 
 const {
@@ -560,7 +561,9 @@ exports.getTokenMarketsById = catchAsync(async (req, res, next) => {
     return next(new ErrorHandler('Token Not Active', 403));
   }
 
-  const { success, data, message, code } = await marketPairFunction(token.ID);
+  const { success, data, message, code } = await tokenMarketPairLatestFunction(
+    token.ID
+  );
 
   if (!success) {
     return next(new ErrorHandler(message, code));
@@ -717,15 +720,15 @@ exports.searchExchanges = catchAsync(async (req, res, next) => {
 });
 
 exports.getExchangeByExId = catchAsync(async (req, res, next) => {
-  const { id } = req.params;
+  const { exchangeId } = req.params;
 
-  const resultMetadata = await exchangeMetadataFunction([id]);
+  const resultMetadata = await exchangeMetadataFunction([exchangeId]);
 
   if (!resultMetadata.success) {
     return next(new ErrorHandler(resultMetadata.message, resultMetadata.code));
   }
 
-  const resultQuoteLatest = await exchangeQuoteLatestFunction([id]);
+  const resultQuoteLatest = await exchangeQuoteLatestFunction([exchangeId]);
 
   if (!resultQuoteLatest.success) {
     return next(
@@ -738,13 +741,13 @@ exports.getExchangeByExId = catchAsync(async (req, res, next) => {
     description,
     logo,
     urls: { fee, website, chat, twitter, blog },
-  } = resultMetadata.data[id];
+  } = resultMetadata.data[exchangeId];
 
   const {
     quote: {
       USD: { volume_24h },
     },
-  } = resultQuoteLatest.data[id];
+  } = resultQuoteLatest.data[exchangeId];
 
   res.status(200).json({
     success: true,
@@ -760,6 +763,36 @@ exports.getExchangeByExId = catchAsync(async (req, res, next) => {
         fee,
         blog,
       },
+    },
+  });
+});
+
+exports.getMarketsOfExchangeByExId = catchAsync(async (req, res, next) => {
+  const { exchangeId } = req.params;
+
+  const { success, data, message, code } =
+    await exchangeMarketPairLatestFunction(exchangeId);
+
+  if (!success) {
+    return next(new ErrorHandler(message, code));
+  }
+
+  const pairs = { spot: [], perpetual: [], futures: [] };
+
+  for (const pair of data.market_pairs) {
+    console.log(pair.category);
+    if (
+      pair.category === 'spot' ||
+      pair.category === 'perpetual' ||
+      pair.category === 'futures'
+    )
+      pairs[pair.category].push(pair);
+  }
+
+  res.status(200).json({
+    success: true,
+    data: {
+      pairs,
     },
   });
 });

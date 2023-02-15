@@ -5,7 +5,7 @@ const {
   TOKEN_QUOTE_LATEST_URL,
   TOKEN_MAP_URL,
   TOKEN_METADATA_URL,
-  MARKET_PAIR_URL,
+  TOKEN_MARKET_PAIR_LATEST_URL,
   OHLCV_HISTORICAL_URL,
   OHLCV_LATEST_URL,
   EXCHANGE_MAP_URL,
@@ -13,6 +13,7 @@ const {
   EXCHANGE_QUOTE_HISTORICAL_URL,
   EXCHANGE_QUOTE_LATEST_URL,
   EXCHANGE_LISTINGS_LATEST,
+  EXCHANGE_MARKET_PAIR_LATEST_URL,
 } = require('../config/url');
 
 const axiosFunction = async (url, params) => {
@@ -55,6 +56,9 @@ const tokenMapFunction = async () =>
 const tokenMetadataFunction = async (ids) =>
   await axiosFunction(TOKEN_METADATA_URL, { id: ids.join(',') });
 
+const tokenMarketPairLatestFunction = async (id) =>
+  await axiosFunction(TOKEN_MARKET_PAIR_LATEST_URL, { id });
+
 const exchangeMapFunction = async () =>
   await axiosFunction(EXCHANGE_MAP_URL, { limit: 20, sort: 'volume_24h' });
 
@@ -83,8 +87,8 @@ const exchangeListingsLatestFunction = async (category) =>
 const exchangeQuoteLatestFunction = async (ids) =>
   await axiosFunction(EXCHANGE_QUOTE_LATEST_URL, { id: ids.join(',') });
 
-const marketPairFunction = async (id) =>
-  await axiosFunction(MARKET_PAIR_URL, { id });
+const exchangeMarketPairLatestFunction = async (id) =>
+  await axiosFunction(EXCHANGE_MARKET_PAIR_LATEST_URL, { id, aux: 'category' });
 
 const ohlcvHistoricalFunction = async (id) =>
   await axiosFunction(OHLCV_HISTORICAL_URL, { id, count: 21 });
@@ -97,7 +101,7 @@ module.exports = {
   tokenQuoteLatestFunction,
   tokenMapFunction,
   tokenMetadataFunction,
-  marketPairFunction,
+  tokenMarketPairLatestFunction,
   ohlcvHistoricalFunction,
   ohlcvLatestFunction,
   exchangeMapFunction,
@@ -105,4 +109,5 @@ module.exports = {
   exchangeQuoteHistoricalFunction,
   exchangeListingsLatestFunction,
   exchangeQuoteLatestFunction,
+  exchangeMarketPairLatestFunction,
 };

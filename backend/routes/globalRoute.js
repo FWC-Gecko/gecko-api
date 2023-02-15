@@ -19,6 +19,7 @@ const {
   getRecommendedData,
   searchExchanges,
   getExchangeByExId,
+  getMarketsOfExchangeByExId,
   getTopPosts,
   getLatestPosts,
   getPostById,
@@ -31,7 +32,8 @@ const {
   getTokenOverviewByIdValidation,
   getTokenMarketsByIdValidation,
   getTokenHistoricalDataByIdValidation,
-  getExchangeByIdValidation,
+  getExchangeByExIdValidation,
+  getMarketsOfExchangeByExIdValidation,
   getTokenVoteByIdValidation,
   voteTokenByIdValidation,
   unvoteTokenByIdValidation,
@@ -105,8 +107,16 @@ router
 router.route('/exchanges').get(searchExchanges);
 //  Get An Exchange By Exchange Id
 router
-  .route('/exchange/:id')
-  .get(...getExchangeByIdValidation, validation, getExchangeByExId);
+  .route('/exchange/:exchangeId')
+  .get(...getExchangeByExIdValidation, validation, getExchangeByExId);
+//  Get Markets By Exchange Id
+router
+  .route('/exchange/:exchangeId/markets')
+  .get(
+    ...getMarketsOfExchangeByExIdValidation,
+    validation,
+    getMarketsOfExchangeByExId
+  );
 /**
  * List new token
  */
