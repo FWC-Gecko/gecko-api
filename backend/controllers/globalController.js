@@ -700,6 +700,7 @@ exports.searchExchanges = catchAsync(async (req, res, next) => {
 
   for (const exchange of listings) {
     exchanges.push({
+      id: exchange.id,
       logo: resultMetadata.data[exchange.id].logo,
       name: exchange.name,
       exchange_score: exchange.exchange_score,
