@@ -775,7 +775,6 @@ exports.getMarketsOfExchangeByExId = catchAsync(async (req, res, next) => {
     return next(new ErrorHandler(message, code));
   }
 
-  // const pairs = { spot: [], perpetual: [], futures: [] };
   let pairs = [];
 
   for (const pair of data.market_pairs) {
@@ -787,7 +786,13 @@ exports.getMarketsOfExchangeByExId = catchAsync(async (req, res, next) => {
       pairs.push(pair);
   }
   //  Get Token IDs
-  const currencyIDs = pairs.map((pair) => pair.market_pair_base.currency_id);
+  let currencyIDs = [];
+
+  for (const pair of pairs) {
+    if (!currencyIDs.includes(pair.market_pair_base.currency_id))
+      currencyIDs.push(pair.market_pair_base.currency_id);
+  }
+
   const len = currencyIDs.length;
 
   const resultTokenMetadata = await tokenMetadataFunction(currencyIDs);

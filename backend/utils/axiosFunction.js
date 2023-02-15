@@ -91,7 +91,11 @@ const exchangeQuoteLatestFunction = async (ids) =>
   });
 
 const exchangeMarketPairLatestFunction = async (id) =>
-  await axiosFunction(EXCHANGE_MARKET_PAIR_LATEST_URL, { id, aux: 'category' });
+  await axiosFunction(EXCHANGE_MARKET_PAIR_LATEST_URL, {
+    id,
+    aux: 'category',
+    limit: 5000,
+  });
 
 const ohlcvHistoricalFunction = async (id) =>
   await axiosFunction(OHLCV_HISTORICAL_URL, { id, count: 21 });
