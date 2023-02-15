@@ -85,7 +85,10 @@ const exchangeListingsLatestFunction = async (category) =>
   });
 
 const exchangeQuoteLatestFunction = async (ids) =>
-  await axiosFunction(EXCHANGE_QUOTE_LATEST_URL, { id: ids.join(',') });
+  await axiosFunction(EXCHANGE_QUOTE_LATEST_URL, {
+    id: ids.join(','),
+    convert_id: '1,2781', //  BTC, USD
+  });
 
 const exchangeMarketPairLatestFunction = async (id) =>
   await axiosFunction(EXCHANGE_MARKET_PAIR_LATEST_URL, { id, aux: 'category' });

@@ -744,11 +744,7 @@ exports.getExchangeByExId = catchAsync(async (req, res, next) => {
     urls: { fee, website, chat, twitter, blog },
   } = resultMetadata.data[exchangeId];
 
-  const {
-    quote: {
-      USD: { volume_24h },
-    },
-  } = resultQuoteLatest.data[exchangeId];
+  const { quote } = resultQuoteLatest.data[exchangeId];
 
   res.status(200).json({
     success: true,
@@ -757,7 +753,8 @@ exports.getExchangeByExId = catchAsync(async (req, res, next) => {
         name,
         description,
         logo,
-        volume_24h,
+        volume_24h_btc: quote['1'].volume_24h,
+        volume_24h_usd: quote['2781'].volume_24h,
         website,
         twitter,
         chat,
