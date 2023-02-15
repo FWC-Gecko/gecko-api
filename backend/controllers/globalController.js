@@ -523,6 +523,21 @@ exports.getTokenOverviewById = catchAsync(async (req, res, next) => {
       }
       timeStart = getUnixTimestamp(timeStart);
       timeEnd = getUnixTimestamp(timeEnd);
+      //  Set Interval
+      if (timeEnd - timeStart <= 60 * 60 * 24 * 7) {
+        //  7 Days
+        interval = '5m';
+      } else if (timeEnd - timeStart <= 60 * 60 * 24 * 30) {
+        //  1 Month
+        interval = '15m';
+      } else if (timeEnd - timeStart <= 60 * 60 * 24 * 90) {
+        //  3 Months
+        interval = '1h';
+      } else if (timeEnd - timeStart <= 60 * 60 * 24 * 365) {
+        //  1 Year
+        interval = '3h';
+      }
+
       break;
     default:
       return next(new ErrorHandler('Period Wrong', 403));
