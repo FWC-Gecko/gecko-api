@@ -775,7 +775,8 @@ exports.getMarketsOfExchangeByExId = catchAsync(async (req, res, next) => {
     return next(new ErrorHandler(message, code));
   }
 
-  const pairs = { spot: [], perpetual: [], futures: [] };
+  // const pairs = { spot: [], perpetual: [], futures: [] };
+  let pairs = [];
 
   for (const pair of data.market_pairs) {
     if (
@@ -783,13 +784,40 @@ exports.getMarketsOfExchangeByExId = catchAsync(async (req, res, next) => {
       pair.category === 'perpetual' ||
       pair.category === 'futures'
     )
-      pairs[pair.category].push(pair);
+      pairs.push(pair);
+  }
+  //  Get Token IDs
+  const currencyIDs = pairs.map((pair) => pair.market_pair_base.currency_id);
+  const len = currencyIDs.length;
+
+  const resultTokenMetadata = await tokenMetadataFunction(currencyIDs);
+
+  if (!resultTokenMetadata.success) {
+    return next(
+      new ErrorHandler(resultTokenMetadata.message, resultTokenMetadata.code)
+    );
+  }
+
+  //  Map with logo
+  for (let i = 0; i < len; i++) {
+    pairs[i].logo = resultTokenMetadata.data[currencyIDs[i]].logo;
+  }
+
+  //  Map By Category
+  const result = { spot: [], perpetual: [], futures: [] };
+  for (const pair of pairs) {
+    if (
+      pair.category === 'spot' ||
+      pair.category === 'perpetual' ||
+      pair.category === 'futures'
+    )
+      result[pair.category].push(pair);
   }
 
   res.status(200).json({
     success: true,
     data: {
-      pairs,
+      pairs: result,
     },
   });
 });
