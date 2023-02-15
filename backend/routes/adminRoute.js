@@ -19,8 +19,9 @@ const {
   refuseInReviewTokenById,
   approvePendingTokenById,
   refusePendingTokenById,
-  approveUpdateRequestedTokenById,
-  refuseUpdateRequestedTokenById,
+  getTokenUpdateRequests,
+  getTokenUpdateRequestById,
+  deleteTokenUpdateRequestById,
   searchPosts,
   getPostById,
   updatePostById,
@@ -47,8 +48,8 @@ const {
   refuseInReviewTokenByIdValidation,
   approvePendingTokenByIdValidation,
   refusePendingTokenByIdValidation,
-  approveUpdateRequestedTokenByIdValidation,
-  refuseUpdateRequestedTokenByIdValidation,
+  getTokenUpdateRequestByIdValidation,
+  deleteTokenUpdateRequestByIdValidation,
   searchPostsValidation,
   getPostByIdValidation,
   updatePostByIdValidation,
@@ -206,25 +207,29 @@ router
     validation,
     refusePendingTokenById
   );
-//  Approve "Update Requested" Token
+
+//  Search Listed Token Update Requests
 router
-  .route('/token/:id/update_requested/approve')
-  .post(
+  .route('/update_requests')
+  .get(isAuthenticated, isAdmin, getTokenUpdateRequests);
+
+router
+  .route('/update_requests/:id')
+  //  Get Update Request By Id
+  .get(
     isAuthenticated,
     isAdmin,
-    ...approveUpdateRequestedTokenByIdValidation,
+    ...getTokenUpdateRequestByIdValidation,
     validation,
-    approveUpdateRequestedTokenById
-  );
-//  Refuse "Update Requested" Token
-router
-  .route('/token/:id/update_requested/refuse')
-  .post(
+    getTokenUpdateRequestById
+  )
+  //  Delete Update Request By Id
+  .delete(
     isAuthenticated,
     isAdmin,
-    ...refuseUpdateRequestedTokenByIdValidation,
+    ...deleteTokenUpdateRequestByIdValidation,
     validation,
-    refuseUpdateRequestedTokenById
+    deleteTokenUpdateRequestById
   );
 /**
  * Post

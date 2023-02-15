@@ -48,7 +48,6 @@ const AssetTag = [
 const TokenStatus = {
   InReview: 'In Review',
   Pending: 'Pending',
-  UpdateRequested: 'Update Requested',
   Active: 'Active',
 };
 

@@ -19,6 +19,15 @@ const queryNumberValidation = (name) => [
     .withMessage('Not Integer Or Out Of Range'),
 ];
 
+const bodyTokenIdValidation = [
+  body('tokenId')
+    .exists()
+    .withMessage('Not Existed')
+    .bail()
+    .isInt({ min: 0 })
+    .withMessage('Not Integer Or Out Of Range'),
+];
+
 //  Main Validation
 const searchCustomersValidation = [
   ...queryNumberValidation('count'),
@@ -45,12 +54,15 @@ const searchUpdateRequestedTokensValidation = [
   ...queryNumberValidation('count'),
   ...queryNumberValidation('page'),
 ];
-const approveInReviewTokenByIdValidation = [];
-const refuseInReviewTokenByIdValidation = [];
-const approvePendingTokenByIdValidation = [];
-const refusePendingTokenByIdValidation = [];
-const approveUpdateRequestedTokenByIdValidation = [];
-const refuseUpdateRequestedTokenByIdValidation = [];
+const approveInReviewTokenByIdValidation = paramIdValidation;
+const refuseInReviewTokenByIdValidation = paramIdValidation;
+const approvePendingTokenByIdValidation = [
+  ...paramIdValidation,
+  ...bodyTokenIdValidation,
+];
+const refusePendingTokenByIdValidation = paramIdValidation;
+const getTokenUpdateRequestByIdValidation = paramIdValidation;
+const deleteTokenUpdateRequestByIdValidation = paramIdValidation;
 const searchPostsValidation = [];
 const getPostByIdValidation = paramIdValidation;
 const updatePostByIdValidation = [];
@@ -76,8 +88,8 @@ module.exports = {
   refuseInReviewTokenByIdValidation,
   approvePendingTokenByIdValidation,
   refusePendingTokenByIdValidation,
-  approveUpdateRequestedTokenByIdValidation,
-  refuseUpdateRequestedTokenByIdValidation,
+  getTokenUpdateRequestByIdValidation,
+  deleteTokenUpdateRequestByIdValidation,
   searchPostsValidation,
   getPostByIdValidation,
   updatePostByIdValidation,
