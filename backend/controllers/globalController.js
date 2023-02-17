@@ -79,7 +79,14 @@ exports.getRecommendedData = catchAsync(async (req, res, next) => {
 
   let totalMarketCap = 0;
   let totalVolume24h = 0;
+  let btcMarketCap = 0;
+  let ethMarketCap = 0;
   for (const ID of IDs) {
+    if (ID === ID_BTC)
+      btcMarketCap = resultQuotes.data[ID].quote.USD.market_cap;
+    else if (ID === ID_ETH)
+      ethMarketCap = resultQuotes.data[ID].quote.USD.market_cap;
+
     totalMarketCap += resultQuotes.data[ID].quote.USD.market_cap;
     totalVolume24h += resultQuotes.data[ID].quote.USD.volume_24h;
   }
@@ -98,6 +105,8 @@ exports.getRecommendedData = catchAsync(async (req, res, next) => {
       exchangeCount: resultExchange.data.length,
       totalMarketCap,
       totalVolume24h,
+      dominanceBTC: (btcMarketCap / totalMarketCap) * 100,
+      dominanceETH: (ethMarketCap / totalMarketCap) * 100,
     },
   });
 });
