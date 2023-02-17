@@ -8,6 +8,7 @@ const Post = require('../models/postModel');
 const Comment = require('../models/commentModel');
 
 const ErrorHandler = require('../utils/errorHandler');
+const gasPrice = require('../utils/gasPrice');
 
 const {
   Position,
@@ -107,6 +108,7 @@ exports.getRecommendedData = catchAsync(async (req, res, next) => {
       totalVolume24h,
       dominanceBTC: (btcMarketCap / totalMarketCap) * 100,
       dominanceETH: (ethMarketCap / totalMarketCap) * 100,
+      gasPrice: await gasPrice(), //  Gas Price
     },
   });
 });
