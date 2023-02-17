@@ -327,7 +327,7 @@ exports.getFeaturedTokens = catchAsync(async (req, res, next) => {
     });
 
     lowestTokens = tokens.slice(0, 3);
-    highestTokens = tokens.slice(-3);
+    highestTokens = tokens.slice(-3).reverse();
 
     //  Sort By Watchlist Count descendingly
     tokens.sort((a, b) => {
