@@ -9,7 +9,10 @@ const helmet = require('helmet');
 const app = express();
 
 //  Get env variables
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'test') {
+  //  development
+  require('dotenv').config({ path: './.env.test' });
+} else if (process.env.NODE_ENV === 'development') {
   //  development
   require('dotenv').config({ path: './.env.development' });
 } else if (process.env.NODE_ENV === 'staging') {
@@ -36,15 +39,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 //  Cors
-if (process.env.NODE_ENV === 'production') {
-  const origins = process.env.ORIGIN || '';
-  app.use(
-    cors({
-      origin: origins.split(','),
-      credentials: true,
-    })
-  );
-} else app.use(cors());
+// if (process.env.NODE_ENV === 'production') {
+//   const origins = process.env.ORIGIN || '';
+//   app.use(
+//     cors({
+//       origin: origins.split(','),
+//       credentials: true,
+//     })
+//   );
+// } else app.use(cors());
+app.use(cors());
 
 app.use('/public', express.static('public'));
 
@@ -52,10 +56,12 @@ app.use('/public', express.static('public'));
 const auth = require('./routes/authRoute');
 const global = require('./routes/globalRoute');
 const customer = require('./routes/customerRoute');
+const admin = require('./routes/adminRoute');
 
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/global', global);
 app.use('/api/v1/customer', customer);
+app.use('/api/v1/admin', admin);
 
 // deployment
 __dirname = path.resolve();

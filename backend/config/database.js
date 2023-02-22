@@ -14,4 +14,8 @@ const connectDatabase = () => {
     });
 };
 
-module.exports = connectDatabase;
+const disconnectDatabase = () => {
+  mongoose.disconnect();
+};
+
+module.exports = { connectDatabase, disconnectDatabase };
