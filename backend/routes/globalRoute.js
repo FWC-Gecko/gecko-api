@@ -3,6 +3,7 @@ const express = require('express');
 const {
   getCommunityFollowerCount,
   searchTokens,
+  getAllTokensForHeatmap,
   listNewToken,
   getPositionList,
   getBlockchainList,
@@ -54,10 +55,13 @@ router.route('/community/followers/count').get(getCommunityFollowerCount);
 
 //  Get Recommended Data (Crypto Count, Exchange Count, Total MarketCap, Total Volume 24h)
 router.route('/recommend').get(getRecommendedData);
-//  Search tokens
+//  Search Tokens
 router
   .route('/tokens')
   .get(...searchTokensValidation, validation, searchTokens);
+
+//  Get All Tokens For Heatmap
+router.route('/tokens/heatmap').get(getAllTokensForHeatmap);
 
 //  Get Featured Tokens (trending tokens, new tokens, volume_24h_change highest tokens, lowest tokens, 3 examples for each features)
 router.route('/tokens/featured').get(getFeaturedTokens);

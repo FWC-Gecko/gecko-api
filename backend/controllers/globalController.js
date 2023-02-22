@@ -201,6 +201,50 @@ exports.searchTokens = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getAllTokensForHeatmap = catchAsync(async (req, res, next) => {
+  const tokens = await Token.find({ status: TokenStatus.Active });
+
+  const IDs = tokens.map((token) => token.ID);
+  const len = IDs.length;
+
+  let result = [];
+
+  if (IDs.length) {
+    const { success, data, code, message } = await tokenQuoteLatestFunction(
+      IDs
+    );
+
+    if (!success) {
+      return next(new ErrorHandler(message, code));
+    }
+
+    let totalMarketCap = 0;
+
+    for (let i = 0; i < len; i++) {
+      result.push({
+        _id: tokens[i]._id,
+        symbol: tokens[i].symbol,
+        price: data[IDs[i]].quote.USD.price,
+        percent_change_24h: data[IDs[i]].quote.USD.percent_change_24h,
+        market_cap: data[IDs[i]].quote.USD.market_cap,
+      });
+      totalMarketCap += data[IDs[i]].quote.USD.market_cap;
+    }
+
+    //  Add Dominance
+    for (let i = 0; i < len; i++) {
+      result[i].dominance = (result[i].market_cap / totalMarketCap) * 100;
+    }
+  }
+
+  res.status(200).json({
+    success: true,
+    data: {
+      tokens: result,
+    },
+  });
+});
+
 exports.addTopTokens = catchAsync(async (req, res, next) => {
   const { success, data, code, message } = await tokenMapFunction();
 
