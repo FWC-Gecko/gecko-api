@@ -24,7 +24,7 @@ exports.signupUser = catchAsync(async (req, res, next) => {
     return next(new ErrorHandler('Email Already Exists', 401));
   }
 
-  const newUser = await User.create({
+  await User.create({
     userName,
     email,
     password,
