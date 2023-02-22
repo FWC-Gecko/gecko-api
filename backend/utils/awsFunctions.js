@@ -35,8 +35,35 @@ const avatarS3Config = multerS3({
   },
 });
 
+const logoS3Config = multerS3({
+  s3: s3Config,
+  bucket: process.env.AWS_S3_BUCKET_NAME,
+  acl: 'public-read',
+  metadata: function (req, file, cb) {
+    cb(null, { fieldName: file.fieldname });
+  },
+  key: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      'logos/' +
+        file.fieldname +
+        '_' +
+        uniqueSuffix +
+        path.extname(file.originalname)
+    );
+  },
+});
+
 exports.uploadAvatar = multer({
   storage: avatarS3Config,
+  limits: {
+    fileSize: 1024 * 1024 * 5,
+  },
+});
+
+exports.uploadLogo = multer({
+  storage: logoS3Config,
   limits: {
     fileSize: 1024 * 1024 * 5,
   },

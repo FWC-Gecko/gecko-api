@@ -1,6 +1,7 @@
 const catchAsync = require('../middlewares/catchAsync');
 
 const ErrorHandler = require('../utils/errorHandler');
+const { deleteFile } = require('../utils/awsFunctions');
 
 const { Role, TokenStatus } = require('../constants/enum');
 
@@ -47,6 +48,7 @@ exports.searchCustomers = catchAsync(async (req, res, next) => {
     data: { customers, pages, page, count },
   });
 });
+
 exports.getCustomerById = catchAsync(async (req, res, next) => {
   const customer = await User.findById(req.params.id);
 
@@ -61,6 +63,7 @@ exports.getCustomerById = catchAsync(async (req, res, next) => {
     },
   });
 });
+
 exports.deleteCustomerById = catchAsync(async (req, res, next) => {
   const customer = await User.findByIdAndRemove(req.params.id);
 
@@ -88,7 +91,32 @@ exports.getTokenById = catchAsync(async (req, res, next) => {
     },
   });
 });
-exports.updateTokenById = catchAsync(async (req, res, next) => {});
+
+exports.updateTokenById = catchAsync(async (req, res, next) => {
+  const token = await Token.findById(req.params.id);
+
+  if (!token) {
+    return next(new ErrorHandler('Token Not Found', 404));
+  }
+
+  for (const key of req.body) {
+    if (key !== 'createdAt' && key !== 'watchlist' && key !== 'vote')
+      token[key] = req.body[key];
+  }
+
+  if (req.file && req.file.location) {
+    await deleteFile(token.logo);
+    token.logo = req.body.logo;
+  }
+
+  await token.save();
+
+  res.status(200).json({
+    success: true,
+    message: 'Token Updated',
+  });
+});
+
 exports.deleteTokenById = catchAsync(async (req, res, next) => {
   const token = await Token.findByIdAndDelete(req.params.id);
 
@@ -309,7 +337,7 @@ exports.approvePendingTokenById = catchAsync(async (req, res, next) => {
   }
 
   token.status = TokenStatus.Active;
-  token.ID = req.body.tokenId;
+  token.ID = req.body.tokenID;
 
   await token.save();
 
@@ -344,10 +372,66 @@ exports.getTokenUpdateRequests = catchAsync(async (req, res, next) => {});
 exports.getTokenUpdateRequestById = catchAsync(async (req, res, next) => {});
 exports.deleteTokenUpdateRequestById = catchAsync(async (req, res, next) => {});
 
-exports.searchPosts = catchAsync(async (req, res, next) => {});
-exports.getPostById = catchAsync(async (req, res, next) => {});
+exports.searchPosts = catchAsync(async (req, res, next) => {
+  const search = req.query.search || '';
+  let count = Number(req.query.count);
+  let page = Number(req.query.page);
+
+  let totalCount = await Post.aggregate([
+    {
+      $match: {
+        text: { $regex: search, $options: 'i' },
+      },
+    },
+    { $count: 'text' },
+  ]);
+
+  totalCount = totalCount.length ? totalCount[0]['email'] : 0;
+
+  const pages = totalCount ? Math.ceil(totalCount / count) : 1;
+
+  page = pages < page ? pages : page;
+
+  const posts = await Post.find({
+    text: { $regex: search, $options: 'i' },
+  })
+    .skip(count * (page - 1))
+    .limit(count);
+
+  res.status(200).json({
+    data: { posts, pages, page, count },
+  });
+});
+
+exports.getPostById = catchAsync(async (req, res, next) => {
+  const post = await Post.findById(req.params.id).populate('comments');
+
+  if (!post) {
+    return next(new ErrorHandler('Post Not Found', 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    data: {
+      post,
+    },
+  });
+});
+
 exports.updatePostById = catchAsync(async (req, res, next) => {});
-exports.deletePostById = catchAsync(async (req, res, next) => {});
+
+exports.deletePostById = catchAsync(async (req, res, next) => {
+  const post = await Post.findByIdAndDelete(req.params.id);
+
+  if (!post) {
+    return next(new ErrorHandler('Post Not Found', 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    message: 'Post Deleted',
+  });
+});
 
 exports.searchNews = catchAsync(async (req, res, next) => {});
 exports.addNews = catchAsync(async (req, res, next) => {});

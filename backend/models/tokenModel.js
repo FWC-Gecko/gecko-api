@@ -32,6 +32,7 @@ const tokenSchema = new mongoose.Schema({
   cryptoAssetTags: [
     {
       type: String,
+      required: true,
     },
   ],
   coinmarketcap: { type: String },

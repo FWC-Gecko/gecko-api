@@ -1,8 +1,9 @@
 const express = require('express');
 
 const { isAuthenticated, isAdmin } = require('../middlewares/auth');
-
 const validation = require('../middlewares/validation');
+
+const { uploadLogo } = require('../utils/awsFunctions');
 
 const {
   searchCustomers,
@@ -113,6 +114,7 @@ router
   .put(
     isAuthenticated,
     isAdmin,
+    uploadLogo.single('logo'),
     ...updateTokenByIdValidation,
     validation,
     updateTokenById
