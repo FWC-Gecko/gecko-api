@@ -396,7 +396,10 @@ exports.listNewToken = catchAsync(async (req, res, next) => {
 
   tokenValues.userPosition = Position[tokenValues.userPosition];
   tokenValues.cryptoAssetTags = tokenValues.cryptoAssetTags.split(',');
-  tokenValues.explorer = tokenValues.explorer.split(',');
+
+  if (tokenValues.explorer && tokenValues.explorer.length)
+    tokenValues.explorer = tokenValues.explorer.split(',');
+
   tokenValues.contractAddress = {
     address: tokenValues.address,
     blockchain: Blockchain[tokenValues.blockchain],
