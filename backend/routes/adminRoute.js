@@ -12,10 +12,7 @@ const {
   getTokenById,
   updateTokenById,
   deleteTokenById,
-  searchInReviewTokens,
-  searchPendingTokens,
-  searchActiveTokens,
-  searchUpdateRequestedTokens,
+  searchTokens,
   approveInReviewTokenById,
   refuseInReviewTokenById,
   approvePendingTokenById,
@@ -41,10 +38,7 @@ const {
   getTokenByIdValidation,
   updateTokenByIdValidation,
   deleteTokenByIdValidation,
-  searchInReviewTokensValidation,
-  searchPendingTokensValidation,
-  searchActiveTokensValidation,
-  searchUpdateRequestedTokensValidation,
+  searchTokensValidation,
   approveInReviewTokenByIdValidation,
   refuseInReviewTokenByIdValidation,
   approvePendingTokenByIdValidation,
@@ -128,45 +122,15 @@ router
     deleteTokenById
   );
 
-//  Search "In Review" Tokens
+//  Search Tokens
 router
-  .route('/tokens/in_review')
+  .route('/tokens')
   .get(
     isAuthenticated,
     isAdmin,
-    ...searchInReviewTokensValidation,
+    ...searchTokensValidation,
     validation,
-    searchInReviewTokens
-  );
-//  Search "Pending" Tokens
-router
-  .route('/tokens/pending')
-  .get(
-    isAuthenticated,
-    isAdmin,
-    ...searchPendingTokensValidation,
-    validation,
-    searchPendingTokens
-  );
-//  Search "Active" Tokens
-router
-  .route('/tokens/active')
-  .get(
-    isAuthenticated,
-    isAdmin,
-    ...searchActiveTokensValidation,
-    validation,
-    searchActiveTokens
-  );
-//  Search "Update Requested" Tokens
-router
-  .route('/tokens/update_requested')
-  .get(
-    isAuthenticated,
-    isAdmin,
-    ...searchUpdateRequestedTokensValidation,
-    validation,
-    searchUpdateRequestedTokens
+    searchTokens
   );
 
 //  Approve "In Review" Token

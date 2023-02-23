@@ -1,4 +1,4 @@
-const { body, param, query } = require('express-validator');
+const { body, param } = require('express-validator');
 
 //  Unit Validation
 const paramIdValidation = [
@@ -10,14 +10,14 @@ const paramIdValidation = [
     .withMessage('Not Mongo ID'),
 ];
 
-const queryNumberValidation = (name) => [
-  query(name)
-    .exists()
-    .withMessage('Not Existed')
-    .bail()
-    .isInt({ min: 1 })
-    .withMessage('Not Integer Or Out Of Range'),
-];
+// const queryNumberValidation = (name) => [
+//   query(name)
+//     .exists()
+//     .withMessage('Not Existed')
+//     .bail()
+//     .isInt({ min: 1 })
+//     .withMessage('Not Integer Or Out Of Range'),
+// ];
 
 const bodyTokenIdValidation = [
   body('tokenId')
@@ -30,29 +30,17 @@ const bodyTokenIdValidation = [
 
 //  Main Validation
 const searchCustomersValidation = [
-  ...queryNumberValidation('count'),
-  ...queryNumberValidation('page'),
+  // ...queryNumberValidation('count'),
+  // ...queryNumberValidation('page'),
 ];
 const getCustomerByIdValidation = paramIdValidation;
 const deleteCustomerByIdValidation = paramIdValidation;
 const getTokenByIdValidation = paramIdValidation;
 const updateTokenByIdValidation = [];
 const deleteTokenByIdValidation = paramIdValidation;
-const searchInReviewTokensValidation = [
-  ...queryNumberValidation('count'),
-  ...queryNumberValidation('page'),
-];
-const searchPendingTokensValidation = [
-  ...queryNumberValidation('count'),
-  ...queryNumberValidation('page'),
-];
-const searchActiveTokensValidation = [
-  ...queryNumberValidation('count'),
-  ...queryNumberValidation('page'),
-];
-const searchUpdateRequestedTokensValidation = [
-  ...queryNumberValidation('count'),
-  ...queryNumberValidation('page'),
+const searchTokensValidation = [
+  // ...queryNumberValidation('count'),
+  // ...queryNumberValidation('page'),
 ];
 const approveInReviewTokenByIdValidation = paramIdValidation;
 const refuseInReviewTokenByIdValidation = paramIdValidation;
@@ -80,10 +68,7 @@ module.exports = {
   getTokenByIdValidation,
   updateTokenByIdValidation,
   deleteTokenByIdValidation,
-  searchInReviewTokensValidation,
-  searchPendingTokensValidation,
-  searchActiveTokensValidation,
-  searchUpdateRequestedTokensValidation,
+  searchTokensValidation,
   approveInReviewTokenByIdValidation,
   refuseInReviewTokenByIdValidation,
   approvePendingTokenByIdValidation,

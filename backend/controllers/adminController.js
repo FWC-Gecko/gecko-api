@@ -8,44 +8,52 @@ const { Role, TokenStatus } = require('../constants/enum');
 const User = require('../models/userModel');
 const Token = require('../models/tokenModel');
 const Post = require('../models/postModel');
-const Comment = require('../models/commentModel');
 
 exports.searchCustomers = catchAsync(async (req, res, next) => {
-  const search = req.query.search || '';
-  let count = Number(req.query.count);
-  let page = Number(req.query.page);
+  // const search = req.query.search || '';
+  // let count = Number(req.query.count);
+  // let page = Number(req.query.page);
 
-  let totalCount = await User.aggregate([
-    {
-      $match: {
-        role: Role.Customer,
-        $or: [
-          { userName: { $regex: search, $options: 'i' } },
-          { email: { $regex: search, $options: 'i' } },
-        ],
-      },
-    },
-    { $count: 'email' },
-  ]);
+  // let totalCount = await User.aggregate([
+  //   {
+  //     $match: {
+  //       role: Role.Customer,
+  //       $or: [
+  //         { userName: { $regex: search, $options: 'i' } },
+  //         { email: { $regex: search, $options: 'i' } },
+  //       ],
+  //     },
+  //   },
+  //   { $count: 'email' },
+  // ]);
 
-  totalCount = totalCount.length ? totalCount[0]['email'] : 0;
+  // totalCount = totalCount.length ? totalCount[0]['email'] : 0;
 
-  const pages = totalCount ? Math.ceil(totalCount / count) : 1;
+  // const pages = totalCount ? Math.ceil(totalCount / count) : 1;
 
-  page = pages < page ? pages : page;
+  // page = pages < page ? pages : page;
 
-  const customers = await User.find({
-    role: Role.Customer,
-    $or: [
-      { userName: { $regex: search, $options: 'i' } },
-      { email: { $regex: search, $options: 'i' } },
-    ],
-  })
-    .skip(count * (page - 1))
-    .limit(count);
+  // const customers = await User.find({
+  //   role: Role.Customer,
+  //   $or: [
+  //     { userName: { $regex: search, $options: 'i' } },
+  //     { email: { $regex: search, $options: 'i' } },
+  //   ],
+  // })
+  //   .skip(count * (page - 1))
+  //   .limit(count);
+
+  // res.status(200).json({
+  //   data: { customers, pages, page, count },
+  // });
+
+  const customers = await User.find({ role: Role.Customer });
 
   res.status(200).json({
-    data: { customers, pages, page, count },
+    success: true,
+    data: {
+      customers,
+    },
   });
 });
 
@@ -130,156 +138,50 @@ exports.deleteTokenById = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.searchInReviewTokens = catchAsync(async (req, res, next) => {
-  const search = req.query.search || '';
-  let count = Number(req.query.count);
-  let page = Number(req.query.page);
+exports.searchTokens = catchAsync(async (req, res, next) => {
+  // const search = req.query.search || '';
+  // let count = Number(req.query.count);
+  // let page = Number(req.query.page);
 
-  let totalCount = await Token.aggregate([
-    {
-      $match: {
-        status: TokenStatus.InReview,
-        $or: [
-          { name: { $regex: search, $options: 'i' } },
-          { symbol: { $regex: search, $options: 'i' } },
-        ],
-      },
-    },
-    { $count: 'name' },
-  ]);
+  // let totalCount = await Token.aggregate([
+  //   {
+  //     $match: {
+  //       status: TokenStatus.InReview,
+  //       $or: [
+  //         { name: { $regex: search, $options: 'i' } },
+  //         { symbol: { $regex: search, $options: 'i' } },
+  //       ],
+  //     },
+  //   },
+  //   { $count: 'name' },
+  // ]);
 
-  totalCount = totalCount.length ? totalCount[0]['name'] : 0;
+  // totalCount = totalCount.length ? totalCount[0]['name'] : 0;
 
-  const pages = totalCount ? Math.ceil(totalCount / count) : 1;
+  // const pages = totalCount ? Math.ceil(totalCount / count) : 1;
 
-  page = pages < page ? pages : page;
+  // page = pages < page ? pages : page;
 
-  const tokens = await Token.find({
-    status: TokenStatus.InReview,
-    $or: [
-      { name: { $regex: search, $options: 'i' } },
-      { symbol: { $regex: search, $options: 'i' } },
-    ],
-  })
-    .skip(count * (page - 1))
-    .limit(count);
+  // const tokens = await Token.find({
+  //   status: TokenStatus.InReview,
+  //   $or: [
+  //     { name: { $regex: search, $options: 'i' } },
+  //     { symbol: { $regex: search, $options: 'i' } },
+  //   ],
+  // })
+  //   .skip(count * (page - 1))
+  //   .limit(count);
 
-  res.status(200).json({
-    data: { tokens, pages, page, count },
-  });
-});
-exports.searchPendingTokens = catchAsync(async (req, res, next) => {
-  const search = req.query.search || '';
-  let count = Number(req.query.count);
-  let page = Number(req.query.page);
-
-  let totalCount = await Token.aggregate([
-    {
-      $match: {
-        status: TokenStatus.Pending,
-        $or: [
-          { name: { $regex: search, $options: 'i' } },
-          { symbol: { $regex: search, $options: 'i' } },
-        ],
-      },
-    },
-    { $count: 'name' },
-  ]);
-
-  totalCount = totalCount.length ? totalCount[0]['name'] : 0;
-
-  const pages = totalCount ? Math.ceil(totalCount / count) : 1;
-
-  page = pages < page ? pages : page;
-
-  const tokens = await Token.find({
-    status: TokenStatus.Pending,
-    $or: [
-      { name: { $regex: search, $options: 'i' } },
-      { symbol: { $regex: search, $options: 'i' } },
-    ],
-  })
-    .skip(count * (page - 1))
-    .limit(count);
+  // res.status(200).json({
+  //   data: { tokens, pages, page, count },
+  // });
+  const tokens = await Token.find({});
 
   res.status(200).json({
-    data: { tokens, pages, page, count },
-  });
-});
-exports.searchActiveTokens = catchAsync(async (req, res, next) => {
-  const search = req.query.search || '';
-  let count = Number(req.query.count);
-  let page = Number(req.query.page);
-
-  let totalCount = await Token.aggregate([
-    {
-      $match: {
-        status: TokenStatus.Active,
-        $or: [
-          { name: { $regex: search, $options: 'i' } },
-          { symbol: { $regex: search, $options: 'i' } },
-        ],
-      },
+    success: true,
+    data: {
+      tokens,
     },
-    { $count: 'name' },
-  ]);
-
-  totalCount = totalCount.length ? totalCount[0]['name'] : 0;
-
-  const pages = totalCount ? Math.ceil(totalCount / count) : 1;
-
-  page = pages < page ? pages : page;
-
-  const tokens = await Token.find({
-    status: TokenStatus.Active,
-    $or: [
-      { name: { $regex: search, $options: 'i' } },
-      { symbol: { $regex: search, $options: 'i' } },
-    ],
-  })
-    .skip(count * (page - 1))
-    .limit(count);
-
-  res.status(200).json({
-    data: { tokens, pages, page, count },
-  });
-});
-exports.searchUpdateRequestedTokens = catchAsync(async (req, res, next) => {
-  const search = req.query.search || '';
-  let count = Number(req.query.count);
-  let page = Number(req.query.page);
-
-  let totalCount = await Token.aggregate([
-    {
-      $match: {
-        status: TokenStatus.UpdateRequested,
-        $or: [
-          { name: { $regex: search, $options: 'i' } },
-          { symbol: { $regex: search, $options: 'i' } },
-        ],
-      },
-    },
-    { $count: 'name' },
-  ]);
-
-  totalCount = totalCount.length ? totalCount[0]['name'] : 0;
-
-  const pages = totalCount ? Math.ceil(totalCount / count) : 1;
-
-  page = pages < page ? pages : page;
-
-  const tokens = await Token.find({
-    status: TokenStatus.UpdateRequested,
-    $or: [
-      { name: { $regex: search, $options: 'i' } },
-      { symbol: { $regex: search, $options: 'i' } },
-    ],
-  })
-    .skip(count * (page - 1))
-    .limit(count);
-
-  res.status(200).json({
-    data: { tokens, pages, page, count },
   });
 });
 
@@ -368,38 +270,47 @@ exports.refusePendingTokenById = catchAsync(async (req, res, next) => {
     message: 'Token Refused On Pending',
   });
 });
+
 exports.getTokenUpdateRequests = catchAsync(async (req, res, next) => {});
 exports.getTokenUpdateRequestById = catchAsync(async (req, res, next) => {});
 exports.deleteTokenUpdateRequestById = catchAsync(async (req, res, next) => {});
 
 exports.searchPosts = catchAsync(async (req, res, next) => {
-  const search = req.query.search || '';
-  let count = Number(req.query.count);
-  let page = Number(req.query.page);
+  // const search = req.query.search || '';
+  // let count = Number(req.query.count);
+  // let page = Number(req.query.page);
 
-  let totalCount = await Post.aggregate([
-    {
-      $match: {
-        text: { $regex: search, $options: 'i' },
-      },
-    },
-    { $count: 'text' },
-  ]);
+  // let totalCount = await Post.aggregate([
+  //   {
+  //     $match: {
+  //       text: { $regex: search, $options: 'i' },
+  //     },
+  //   },
+  //   { $count: 'text' },
+  // ]);
 
-  totalCount = totalCount.length ? totalCount[0]['email'] : 0;
+  // totalCount = totalCount.length ? totalCount[0]['email'] : 0;
 
-  const pages = totalCount ? Math.ceil(totalCount / count) : 1;
+  // const pages = totalCount ? Math.ceil(totalCount / count) : 1;
 
-  page = pages < page ? pages : page;
+  // page = pages < page ? pages : page;
 
-  const posts = await Post.find({
-    text: { $regex: search, $options: 'i' },
-  })
-    .skip(count * (page - 1))
-    .limit(count);
+  // const posts = await Post.find({
+  //   text: { $regex: search, $options: 'i' },
+  // })
+  //   .skip(count * (page - 1))
+  //   .limit(count);
+
+  // res.status(200).json({
+  //   data: { posts, pages, page, count },
+  // });
+  const posts = await Post.find({});
 
   res.status(200).json({
-    data: { posts, pages, page, count },
+    success: true,
+    data: {
+      posts,
+    },
   });
 });
 
