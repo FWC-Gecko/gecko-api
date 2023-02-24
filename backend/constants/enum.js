@@ -49,6 +49,9 @@ const TokenStatus = {
   InReview: 'In Review',
   Pending: 'Pending',
   Active: 'Active',
+  Updating: 'Updating',
+  InReviewRefused: 'InReviewRefused',
+  PendingRefused: 'PendingRefused',
 };
 
 const PostStatus = {

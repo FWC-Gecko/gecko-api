@@ -207,6 +207,7 @@ exports.approveInReviewTokenById = catchAsync(async (req, res, next) => {
     message: 'Token Approved To Pending',
   });
 });
+
 exports.refuseInReviewTokenById = catchAsync(async (req, res, next) => {
   const token = await Token.findById(req.params.id);
 
@@ -218,15 +219,44 @@ exports.refuseInReviewTokenById = catchAsync(async (req, res, next) => {
     return next(new ErrorHandler('Token Status Not In Review', 400));
   }
 
-  await Token.deleteOne({ _id: req.params.id });
+  token.status = TokenStatus.InReviewRefused;
+  token.refusedReason = req.body.reason;
+
+  await token.save();
 
   //  Send Email
 
   res.status(200).json({
     success: true,
-    message: 'Token Refused In Review',
+    message: 'Token Refused From In Review',
   });
 });
+
+exports.recoverRefusedTokenToInReviewById = catchAsync(
+  async (req, res, next) => {
+    const token = await Token.findById(req.params.id);
+
+    if (!token) {
+      return next(new ErrorHandler('Token Not Found', 404));
+    }
+
+    if (token.status !== TokenStatus.InReviewRefused) {
+      return next(new ErrorHandler('Token Status Not In Review Refused', 400));
+    }
+
+    token.status = TokenStatus.InReview;
+
+    await token.save();
+
+    //  Send Email
+
+    res.status(200).json({
+      success: true,
+      message: 'Token Recovered To In Review',
+    });
+  }
+);
+
 exports.approvePendingTokenById = catchAsync(async (req, res, next) => {
   const token = await Token.findById(req.params.id);
 
@@ -250,6 +280,7 @@ exports.approvePendingTokenById = catchAsync(async (req, res, next) => {
     message: 'Token Approved To Active',
   });
 });
+
 exports.refusePendingTokenById = catchAsync(async (req, res, next) => {
   const token = await Token.findById(req.params.id);
 
@@ -261,15 +292,43 @@ exports.refusePendingTokenById = catchAsync(async (req, res, next) => {
     return next(new ErrorHandler('Token Status Not Pending', 400));
   }
 
-  await Token.deleteOne({ _id: req.params.id });
+  token.status = TokenStatus.PendingRefused;
+  token.refusedReason = req.body.reason;
+
+  await token.save();
 
   //  Send Email
 
   res.status(200).json({
     success: true,
-    message: 'Token Refused On Pending',
+    message: 'Token Refused From Pending',
   });
 });
+
+exports.recoverRefusedTokenToPendingById = catchAsync(
+  async (req, res, next) => {
+    const token = await Token.findById(req.params.id);
+
+    if (!token) {
+      return next(new ErrorHandler('Token Not Found', 404));
+    }
+
+    if (token.status !== TokenStatus.Pending) {
+      return next(new ErrorHandler('Token Status Not Pending Refused', 400));
+    }
+
+    token.status = TokenStatus.Pending;
+
+    await token.save();
+
+    //  Send Email
+
+    res.status(200).json({
+      success: true,
+      message: 'Token Recovered To Pending',
+    });
+  }
+);
 
 exports.getTokenUpdateRequests = catchAsync(async (req, res, next) => {});
 exports.getTokenUpdateRequestById = catchAsync(async (req, res, next) => {});

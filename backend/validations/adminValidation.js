@@ -10,6 +10,18 @@ const paramIdValidation = [
     .withMessage('Not Mongo ID'),
 ];
 
+const stringValidation = (name) => [
+  body(name)
+    .exists()
+    .withMessage('Not Existed')
+    .bail()
+    .notEmpty()
+    .withMessage('Empty')
+    .bail()
+    .isString()
+    .withMessage('Not String'),
+];
+
 // const queryNumberValidation = (name) => [
 //   query(name)
 //     .exists()
@@ -43,12 +55,20 @@ const searchTokensValidation = [
   // ...queryNumberValidation('page'),
 ];
 const approveInReviewTokenByIdValidation = paramIdValidation;
-const refuseInReviewTokenByIdValidation = paramIdValidation;
+const refuseInReviewTokenByIdValidation = [
+  ...paramIdValidation,
+  stringValidation('reason'),
+];
+const recoverRefusedTokenToInReviewByIdValidation = paramIdValidation;
 const approvePendingTokenByIdValidation = [
   ...paramIdValidation,
   ...bodyTokenIdValidation,
 ];
-const refusePendingTokenByIdValidation = paramIdValidation;
+const refusePendingTokenByIdValidation = [
+  ...paramIdValidation,
+  stringValidation('reason'),
+];
+const recoverRefusedTokenToPendingByIdValidation = paramIdValidation;
 const getTokenUpdateRequestByIdValidation = paramIdValidation;
 const deleteTokenUpdateRequestByIdValidation = paramIdValidation;
 const searchPostsValidation = [];
@@ -71,8 +91,10 @@ module.exports = {
   searchTokensValidation,
   approveInReviewTokenByIdValidation,
   refuseInReviewTokenByIdValidation,
+  recoverRefusedTokenToInReviewByIdValidation,
   approvePendingTokenByIdValidation,
   refusePendingTokenByIdValidation,
+  recoverRefusedTokenToPendingByIdValidation,
   getTokenUpdateRequestByIdValidation,
   deleteTokenUpdateRequestByIdValidation,
   searchPostsValidation,

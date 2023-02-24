@@ -15,8 +15,10 @@ const {
   searchTokens,
   approveInReviewTokenById,
   refuseInReviewTokenById,
+  recoverRefusedTokenToInReviewById,
   approvePendingTokenById,
   refusePendingTokenById,
+  recoverRefusedTokenToPendingById,
   getTokenUpdateRequests,
   getTokenUpdateRequestById,
   deleteTokenUpdateRequestById,
@@ -41,8 +43,10 @@ const {
   searchTokensValidation,
   approveInReviewTokenByIdValidation,
   refuseInReviewTokenByIdValidation,
+  recoverRefusedTokenToInReviewByIdValidation,
   approvePendingTokenByIdValidation,
   refusePendingTokenByIdValidation,
+  recoverRefusedTokenToPendingByIdValidation,
   getTokenUpdateRequestByIdValidation,
   deleteTokenUpdateRequestByIdValidation,
   searchPostsValidation,
@@ -173,7 +177,26 @@ router
     validation,
     refusePendingTokenById
   );
-
+//  Recover "Refused" Token To "In Review"
+router
+  .route('/token/:id/in_review_refused/recover')
+  .post(
+    isAuthenticated,
+    isAdmin,
+    ...recoverRefusedTokenToInReviewByIdValidation,
+    validation,
+    recoverRefusedTokenToInReviewById
+  );
+//  Recover "Refused" Token To "Pending"
+router
+  .route('/token/:id/pending_refused/recover')
+  .post(
+    isAuthenticated,
+    isAdmin,
+    ...recoverRefusedTokenToPendingByIdValidation,
+    validation,
+    recoverRefusedTokenToPendingById
+  );
 //  Search Listed Token Update Requests
 router
   .route('/update_requests')

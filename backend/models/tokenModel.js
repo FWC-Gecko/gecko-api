@@ -59,6 +59,9 @@ const tokenSchema = new mongoose.Schema({
   },
   watchlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   vote: { type: mongoose.Schema.Types.Mixed, default: {} },
+  refusedReason: {
+    type: String,
+  },
 });
 
 module.exports = mongoose.model('Token', tokenSchema);
