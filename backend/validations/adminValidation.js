@@ -32,7 +32,7 @@ const stringValidation = (name) => [
 // ];
 
 const bodyTokenIdValidation = [
-  body('tokenId')
+  body('tokenID')
     .exists()
     .withMessage('Not Existed')
     .bail()
