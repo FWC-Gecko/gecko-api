@@ -1,17 +1,30 @@
 const mongoose = require('mongoose');
 
+const { UpdateRequest, Market } = require('../constants/enum');
+
 const requestSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now(),
   },
+  type: {
+    type: Number,
+    min: 0,
+    max: UpdateRequest.length - 1,
+    required: true,
+  },
   email: {
     type: String,
     required: true,
   },
-  subjectField: {
+  subject: {
     type: String,
     required: true,
+  },
+  market: {
+    type: Number,
+    min: 0,
+    max: Market.length - 1,
   },
   url: {
     type: String,
@@ -21,9 +34,9 @@ const requestSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  proof: {
-    type: String,
-    required: true,
+  wallet: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Wallet',
   },
 });
 

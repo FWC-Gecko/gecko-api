@@ -6,15 +6,20 @@ const Token = require('../models/tokenModel');
 const User = require('../models/userModel');
 const Post = require('../models/postModel');
 const Comment = require('../models/commentModel');
+const Request = require('../models/requestModel');
+const Wallet = require('../models/walletModel');
 
 const ErrorHandler = require('../utils/errorHandler');
 const gasPrice = require('../utils/gasPrice');
+const createWallet = require('../utils/createWallet');
 
 const {
   Position,
   Blockchain,
   AssetTag,
   TokenStatus,
+  UpdateRequest,
+  Market,
 } = require('../constants/enum');
 const {
   ID_BTC,
@@ -22,6 +27,9 @@ const {
   ID_USD,
   ID_FWC,
   ID_FWCL,
+  ID_BNB,
+  ID_BUSD,
+  ID_USDT,
 } = require('../constants/tokenId');
 
 const {
@@ -1124,5 +1132,114 @@ exports.getPostById = catchAsync(async (req, res, next) => {
   res.status(200).json({
     success: true,
     data: { post: post[0] },
+  });
+});
+
+exports.getRequestTypes = catchAsync(async (req, res, next) => {
+  res.status(200).json({
+    success: true,
+    data: {
+      requestTypes: UpdateRequest.map(
+        (request, index) => `${index + 1} - ${request}`
+      ),
+    },
+  });
+});
+
+exports.getMarketTypes = catchAsync(async (req, res, next) => {
+  res.status(200).json({
+    success: true,
+    data: {
+      marketTypes: Market,
+    },
+  });
+});
+
+exports.submitRequest = catchAsync(async (req, res, next) => {
+  const {
+    type,
+    email,
+    subject,
+    market,
+    url,
+    description,
+    address,
+    paymentToken,
+  } = req.body;
+
+  //  If the type is "Add market/pair"
+  if (type === 0 && (!market || market < 0 || market > Market.length)) {
+    return next(new ErrorHandler('Market Not Existed Or Out Of Range', 400));
+  }
+
+  const wallet = await Wallet.findOne({ address });
+
+  if (!wallet) {
+    return next(new ErrorHandler('Wallet Not Found', 404));
+  }
+
+  const request = new Request(
+    type === 0
+      ? {
+          type,
+          email,
+          subject,
+          market,
+          url,
+          description,
+          wallet,
+          paymentToken,
+        }
+      : {
+          type,
+          email,
+          subject,
+          url,
+          description,
+          wallet,
+          paymentToken,
+        }
+  );
+
+  await request.save();
+
+  res.status(200).json({
+    success: true,
+  });
+});
+
+exports.getNewWallet = catchAsync(async (req, res, next) => {
+  const { address, privateKey } = createWallet();
+
+  const { success, data, code, message } = await tokenQuoteLatestFunction(
+    [ID_BNB],
+    [ID_BUSD, ID_USDT, ID_FWC]
+  );
+
+  if (!success) {
+    return next(new ErrorHandler(message, code));
+  }
+
+  const price = {
+    BNB: 1,
+    BUSD: data[ID_BNB].quote[ID_BUSD].price,
+    USDT: data[ID_BNB].quote[ID_USDT].price,
+    FWC: data[ID_BNB].quote[ID_FWC].price,
+  };
+
+  const wallet = new Wallet({
+    address,
+    privateKey,
+    price,
+  });
+
+  await wallet.save();
+
+  res.status(200).json({
+    success: true,
+    data: {
+      address,
+      price,
+    },
   });
 });

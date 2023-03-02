@@ -4,6 +4,10 @@ const catchAsync = require('./catchAsync');
 
 const { deleteFile } = require('../utils/awsFunctions');
 
+function capitalize(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 const validation = catchAsync(async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -12,7 +16,7 @@ const validation = catchAsync(async (req, res, next) => {
       success: false,
       message: errors
         .array()
-        .map((error) => error.param + ' ' + error.msg)
+        .map((error) => capitalize(error.param) + ' ' + error.msg)
         .join(', '),
     });
   }

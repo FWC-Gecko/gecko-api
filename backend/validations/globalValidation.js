@@ -1,6 +1,11 @@
 const { body, param, query } = require('express-validator');
 
-const { Position, Blockchain } = require('../constants/enum');
+const {
+  Position,
+  Blockchain,
+  UpdateRequest,
+  PaymentToken,
+} = require('../constants/enum');
 
 //  Unit validations
 const stringValidation = (name) => [
@@ -111,6 +116,30 @@ const getTokenVoteByIdValidation = idValidation;
 const voteTokenByIdValidation = idValidation;
 const unvoteTokenByIdValidation = idValidation;
 const getPostByIdValidation = idValidation;
+const submitRequestValidation = [
+  body('type')
+    .exists()
+    .withMessage('Not Existed')
+    .bail()
+    .isInt({ min: 0, max: UpdateRequest.length - 1 })
+    .withMessage('Not Integer Or Out Of Range'),
+  ...emailValidation('email'),
+  ...stringValidation('subject'),
+  ...stringValidation('url'),
+  ...stringValidation('description'),
+  body('address')
+    .exists()
+    .withMessage('Not Existed')
+    .bail()
+    .isEthereumAddress()
+    .withMessage('Not Ethereum Address'),
+  body('paymentToken')
+    .exists()
+    .withMessage('Not Existed')
+    .bail()
+    .isIn(PaymentToken)
+    .withMessage('Not Matched'),
+];
 
 module.exports = {
   searchTokensValidation,
@@ -125,4 +154,5 @@ module.exports = {
   voteTokenByIdValidation,
   unvoteTokenByIdValidation,
   getPostByIdValidation,
+  submitRequestValidation,
 };

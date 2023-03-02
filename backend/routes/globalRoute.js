@@ -24,6 +24,10 @@ const {
   getTopPosts,
   getLatestPosts,
   getPostById,
+  getRequestTypes,
+  getMarketTypes,
+  submitRequest,
+  getNewWallet,
 } = require('../controllers/globalController');
 
 const {
@@ -39,6 +43,7 @@ const {
   voteTokenByIdValidation,
   unvoteTokenByIdValidation,
   getPostByIdValidation,
+  submitRequestValidation,
 } = require('../validations/globalValidation');
 
 const validation = require('../middlewares/validation');
@@ -148,5 +153,22 @@ router.route('/posts/latest').get(getLatestPosts);
 router
   .route('/post/:id')
   .get(...getPostByIdValidation, validation, getPostById);
+
+/**
+ *  Request For Update
+ */
+//  Get All Request Types
+router.route('/request_types').get(getRequestTypes);
+
+//  Get All Market Types
+router.route('/market_types').get(getMarketTypes);
+
+//  Submit A New Request
+router
+  .route('/request/submit')
+  .post(...submitRequestValidation, validation, submitRequest);
+
+//  Get A New Wallet & Price List(BNB -> BUSD, USDT, FWC)
+router.route('/new_wallet').get(getNewWallet);
 
 module.exports = router;

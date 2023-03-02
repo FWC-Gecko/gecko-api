@@ -59,6 +59,24 @@ const PostStatus = {
   bearish: 'bearish',
 };
 
+const UpdateRequest = [
+  '[Existing Cryptoasset & Exchange] Add market/pair',
+  '[Existing Cryptoasset] Update supply figures',
+  '[Existing Cryptoasset] Coin/Token Swap',
+  '[Existing Exchange] Update info (e.g. Fiat on-ramp, Rebrand, API update)',
+  '[Existing Cryptoasset] Update info (e.g. Rebrand, URL update, Tagging)',
+];
+
+const Market = [
+  'Spot',
+  'Perpetual Swap (No expiry)',
+  'Cash-Settled Futures',
+  'Physically-delivered Futures',
+  'Options',
+];
+
+const PaymentToken = ['BNB', 'BUSD', 'USDT', 'FWC'];
+
 module.exports = {
   Role,
   Position,
@@ -66,4 +84,7 @@ module.exports = {
   AssetTag,
   TokenStatus,
   PostStatus,
+  UpdateRequest,
+  Market,
+  PaymentToken,
 };
