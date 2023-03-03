@@ -1221,7 +1221,7 @@ exports.getNewWallet = catchAsync(async (req, res, next) => {
   }
 
   const BNBAmount = 0.001;
-  const BNBFee = process.env.TRANSACTION_FEE;
+  const BNBFee = Number(process.env.TRANSACTION_FEE);
 
   const price = {
     BNB: BNBAmount + BNBFee,
