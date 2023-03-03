@@ -15,7 +15,7 @@ const erc20Abi = require('../abi/erc20.abi.json');
 const provider = new ethers.providers.JsonRpcProvider(process.env.BSC_RPC_URL);
 
 const BNBAmount = 0.001;
-const BNBFee = process.env.BNB_FEE;
+const BNBFee = process.env.TRANSACTION_FEE;
 
 const sendBNB = async (sender, to_address, amount, callback) => {
   const gasPrice = await provider.getGasPrice();

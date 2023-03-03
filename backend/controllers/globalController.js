@@ -1221,12 +1221,13 @@ exports.getNewWallet = catchAsync(async (req, res, next) => {
   }
 
   const BNBAmount = 0.001;
+  const BNBFee = process.env.TRANSACTION_FEE;
 
   const price = {
-    BNB: BNBAmount,
-    BUSD: data[ID_BNB].quote[ID_BUSD].price * BNBAmount,
-    USDT: data[ID_BNB].quote[ID_USDT].price * BNBAmount,
-    FWC: data[ID_BNB].quote[ID_FWC].price * BNBAmount,
+    BNB: BNBAmount + BNBFee,
+    BUSD: data[ID_BNB].quote[ID_BUSD].price * (BNBAmount + BNBFee),
+    USDT: data[ID_BNB].quote[ID_USDT].price * (BNBAmount + BNBFee),
+    FWC: data[ID_BNB].quote[ID_FWC].price * (BNBAmount + BNBFee),
   };
 
   const wallet = new Wallet({
