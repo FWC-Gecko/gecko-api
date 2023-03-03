@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const { UpdateRequest, Market } = require('../constants/enum');
+const { UpdateRequest, Market, PaymentToken } = require('../constants/enum');
 
 const requestSchema = new mongoose.Schema({
   createdAt: {
@@ -37,6 +37,19 @@ const requestSchema = new mongoose.Schema({
   wallet: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Wallet',
+  },
+  paymentToken: {
+    type: String,
+    enum: PaymentToken,
+    required: true,
+  },
+  expired: {
+    type: Boolean,
+    default: false,
+  },
+  paid: {
+    type: Boolean,
+    default: false,
   },
 });
 
