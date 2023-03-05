@@ -80,6 +80,7 @@ const addNewsValidation = [];
 const getNewsByIdValidation = paramIdValidation;
 const updateNewsByIdValidation = [];
 const deleteNewsByIdValidation = paramIdValidation;
+const getRequestByIdValidation = paramIdValidation;
 
 module.exports = {
   searchCustomersValidation,
@@ -106,4 +107,5 @@ module.exports = {
   getNewsByIdValidation,
   updateNewsByIdValidation,
   deleteNewsByIdValidation,
+  getRequestByIdValidation,
 };
