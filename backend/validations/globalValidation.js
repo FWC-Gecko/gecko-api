@@ -141,6 +141,8 @@ const submitRequestValidation = [
     .withMessage('Not Matched'),
 ];
 
+const getRequestByIdValidation = idValidation;
+
 module.exports = {
   searchTokensValidation,
   listNewTokenValidation,
@@ -155,4 +157,5 @@ module.exports = {
   unvoteTokenByIdValidation,
   getPostByIdValidation,
   submitRequestValidation,
+  getRequestByIdValidation,
 };

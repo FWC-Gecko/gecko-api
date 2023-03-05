@@ -8,6 +8,7 @@ const { Role, TokenStatus } = require('../constants/enum');
 const User = require('../models/userModel');
 const Token = require('../models/tokenModel');
 const Post = require('../models/postModel');
+const Request = require('../models/requestModel');
 
 exports.searchCustomers = catchAsync(async (req, res, next) => {
   // const search = req.query.search || '';
@@ -408,3 +409,29 @@ exports.addNews = catchAsync(async (req, res, next) => {});
 exports.getNewsById = catchAsync(async (req, res, next) => {});
 exports.updateNewsById = catchAsync(async (req, res, next) => {});
 exports.deleteNewsById = catchAsync(async (req, res, next) => {});
+
+exports.getAllRequests = catchAsync(async (req, res, next) => {
+  const requests = await Request.find({});
+
+  res.status(200).json({
+    success: true,
+    data: {
+      requests,
+    },
+  });
+});
+
+exports.getRequestById = catchAsync(async (req, res, next) => {
+  const request = await Request.findById(req.params.id);
+
+  if (!request) {
+    return next(new ErrorHandler('Request Not Found', 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    data: {
+      request,
+    },
+  });
+});

@@ -31,6 +31,8 @@ const {
   getNewsById,
   updateNewsById,
   deleteNewsById,
+  getAllRequests,
+  getRequestById,
 } = require('../controllers/adminController');
 
 const {
@@ -58,6 +60,7 @@ const {
   getNewsByIdValidation,
   updateNewsByIdValidation,
   deleteNewsByIdValidation,
+  getRequestByIdValidation,
 } = require('../validations/adminValidation');
 
 const router = express();
@@ -303,4 +306,20 @@ router
     deleteNewsById
   );
 
+/**
+ * Request For Token Update
+ */
+//  Get All Requests
+router.route('/requests').get(isAuthenticated, isAdmin, getAllRequests);
+
+//  Get Request By Id
+router
+  .route('/request/:id')
+  .get(
+    isAuthenticated,
+    isAdmin,
+    ...getRequestByIdValidation,
+    validation,
+    getRequestById
+  );
 module.exports = router;
