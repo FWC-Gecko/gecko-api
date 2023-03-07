@@ -51,6 +51,10 @@ const requestSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  withdraw: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 module.exports = mongoose.model('Request', requestSchema);

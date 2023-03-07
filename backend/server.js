@@ -10,5 +10,5 @@ app.listen(PORT, () => {
 
   setInterval(() => {
     walletChecker();
-  }, 1000 * 5); //  every 5 minutes
+  }, 1000 * 60 * 5); //  every 5 minutes
 });
