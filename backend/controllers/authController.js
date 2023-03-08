@@ -281,3 +281,16 @@ exports.updateWallet = catchAsync(async (req, res, next) => {
     message: 'Wallet Updated',
   });
 });
+
+exports.updateAvatar = catchAsync(async (req, res, next) => {
+  if (req.file && req.file.location) {
+    await User.findByIdAndUpdate(req.user._id, { avatar: req.file.location });
+  } else {
+    return next(new ErrorHandler('Avatar Not Found', 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    message: 'Avatar Updated',
+  });
+});

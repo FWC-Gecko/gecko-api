@@ -12,6 +12,7 @@ const {
   deleteProfile,
   sendPasscodeByEmail,
   updateWallet,
+  updateAvatar,
 } = require('../controllers/authController');
 
 const { isAuthenticated } = require('../middlewares/auth');
@@ -48,9 +49,14 @@ router
   //  Get profile
   .get(isAuthenticated, getProfile)
   //  Update profile
-  .put(isAuthenticated, uploadAvatar.single('avatar'), updateProfile)
+  .put(isAuthenticated, updateProfile)
   //  Delete profile
   .delete(isAuthenticated, deleteProfile);
+
+//  Update Avatar
+router
+  .route('/me/avatar')
+  .put(isAuthenticated, uploadAvatar.single('avatar'), updateAvatar);
 
 //  Update the password
 router.route('/password/update').put(isAuthenticated, updatePassword);
