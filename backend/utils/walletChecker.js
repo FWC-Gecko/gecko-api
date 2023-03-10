@@ -16,7 +16,7 @@ const erc20Abi = require('../abi/erc20.abi.json');
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.BSC_RPC_URL);
 
-const BNBAmount = process.env.NODE_ENV === 'production' ? 1 : 0.001; //  BNB
+const BNBAmount = 1; //  BNB
 const BNBFee = process.env.TRANSACTION_FEE;
 
 const sendBNB = async (sender, to_address, amount, callback) => {
@@ -25,9 +25,16 @@ const sendBNB = async (sender, to_address, amount, callback) => {
       to: to_address,
       value: ethers.utils.parseEther(amount.toString()),
     })
-    .then((transaction) => {
-      console.log(transaction.hash);
-      if (callback) callback();
+    .then(async (transaction) => {
+      transaction
+        .wait()
+        .then(() => {
+          console.log(transaction.hash);
+          if (callback) callback();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     })
     .catch((error) => {
       console.log(error);
@@ -278,7 +285,6 @@ const walletChecker = async () => {
               //  Send Tokens To The Main Wallet
               sender = new ethers.Wallet(request.wallet.privateKey);
               senderSigner = sender.connect(provider);
-              console.log('balance*', ethers.utils.parseUnits(balance, 9));
               sendToken(
                 senderSigner,
                 TOKEN_FWC_ADDRESS,
