@@ -16,7 +16,7 @@ const erc20Abi = require('../abi/erc20.abi.json');
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.BSC_RPC_URL);
 
-const BNBAmount = 1; //  BNB
+const BNBAmount = 0.1; //  BNB
 const BNBFee = process.env.TRANSACTION_FEE;
 
 const sendBNB = async (sender, to_address, amount, callback) => {
