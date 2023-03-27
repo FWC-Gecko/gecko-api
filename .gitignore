@@ -2,9 +2,9 @@
 /node_modules
 
 # local env files
-/.env
-/.env.development
-/.env.staging
-/.env.test
+# /.env
+# /.env.development
+# /.env.staging
+# /.env.test
 
 /frontend
