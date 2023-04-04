@@ -13,7 +13,7 @@
     "format": "prettier --check .",
     "format:write": "prettier --write ."
   },
-  "author": "SuperUmam",
+  "author": "Zheng Shi",
   "license": "ISC",
   "dependencies": {
     "@sendgrid/mail": "^7.6.2",
